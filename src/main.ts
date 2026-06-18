@@ -6,9 +6,8 @@ import { HttpLogger } from './common/middleware/http-logger.middleware';
 import { NestExpressApplication } from '@nestjs/platform-express/interfaces/nest-express-application.interface';
 import { Logger } from '@nestjs/common/services/logger.service';
 
-
 async function bootstrap() {
-   const logger = new Logger('Assessment-Survey-V1');
+  const logger = new Logger('Assessment-Survey-V1');
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
@@ -16,12 +15,10 @@ async function bootstrap() {
 
   const port = configService.get<string>('PORT');
 
-
-
   app.setGlobalPrefix('api/v1');
   app.use(new HttpLogger().use);
   app.useGlobalFilters(new GlobalExceptionFilter());
-    app.enableCors({
+  app.enableCors({
     origin: '*', // Allow all origins
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with'],
