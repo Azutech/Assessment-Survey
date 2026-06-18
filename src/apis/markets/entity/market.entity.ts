@@ -5,12 +5,13 @@ import { Document } from 'mongoose';
 
 export type MarketDocument = Market & Document;
 
+@Schema()
 export class Market {
   @Prop({ required: true, trim: true })
   marketName: string;
 
   @Prop({ required: true, trim: true })
-  LGA: string;
+  marketLGA: string;
 
   @Prop({ required: true, trim: true })
   marketState: string;
@@ -20,9 +21,6 @@ export class Market {
 
   @Prop({ type: String, required: false })
   marketGPS: string;
-
-  @Prop({ default: true })
-  isActive: boolean;
 
   @Prop({
     type: Date,

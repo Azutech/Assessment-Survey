@@ -3,14 +3,13 @@ import { MarketsService } from './markets.service';
 import { MarketsController } from './markets.controller';
 import { Market, MarketSchema } from './entity/market.entity';
 import { MongooseModule } from '@nestjs/mongoose/dist/mongoose.module';
+import { MarketRepository } from './repository/market.repository';
 
 @Module({
   imports: [
-        MongooseModule.forFeature([
-      { name: Market.name, schema: MarketSchema },
-  ])
-],
+    MongooseModule.forFeature([{ name: Market.name, schema: MarketSchema }]),
+  ],
   controllers: [MarketsController],
-  providers: [MarketsService],
+  providers: [MarketsService, MarketRepository],
 })
 export class MarketsModule {}

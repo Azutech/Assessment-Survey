@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule, ConfigService} from '@nestjs/config'
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MarketsModule } from './apis/markets/markets.module';
 import { SurveysModule } from './apis/surveys/surveys.module';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -12,7 +12,7 @@ import { MongooseModule } from '@nestjs/mongoose';
       isGlobal: true,
       envFilePath: '.env', // optional, defaults to process.env
     }),
-      MongooseModule.forRootAsync({
+    MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => ({
