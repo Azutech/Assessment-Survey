@@ -1,7 +1,7 @@
 import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { startOfSecond } from 'date-fns';
-import { AgentStatus } from '../enum/enum';
+import { AgentStatus } from '../utils/enum/util.enum';
 
 @Schema()
 export class Agent extends Document {
@@ -29,13 +29,13 @@ export class Agent extends Document {
   @Prop({ type: String, required: false })
   uniqueId: string;
 
-  @Prop({ type: String, required: false, default: 'active' })
+  @Prop({ type: String, required: false, default: AgentStatus.ACTIVE })
   status: string;
 
   @Prop({ type: Number, required: false, default: 0 })
   totalResponse: number;
 
-  @Prop({ type: String, required: false, default: AgentStatus.ACTIVE })
+  @Prop({ type: String, required: false, default: 'agent' })
   userType: string;
 
   @Prop({ default: () => startOfSecond(new Date()), type: Date })
