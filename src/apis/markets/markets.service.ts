@@ -49,18 +49,15 @@ export class MarketsService {
     return market;
   }
 
-  async findAllMarkets(search?: string, marketEntity?: string): Promise<any> {
-    const markets = await this.marketRepository.findAllMarkets(
-      {},
-      search,
-      marketEntity,
-    );
+  async findAllMarkets(query: QueryMarketDto): Promise<any> {
+    const sanitizedQuery = trimObjectStrings(query);
+    const markets = await this.marketRepository.findAllMarkets(sanitizedQuery);
 
     if (markets.length === 0) {
-      return [];
+      return { data: [], message: 'No market found matching your search' };
     }
 
-    return markets;
+    return { data: markets, message: 'Markets retrieved successfully' };
   }
 
   remove(id: number) {

@@ -18,6 +18,4 @@ export class AgentsController {
   create(@Body() createAgentDto: CreateAgentDto) {
     return this.agentsService.create(createAgentDto);
   }
-
-
 }
