@@ -39,8 +39,14 @@ export class MarketsService {
     return `This action returns all markets`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} market`;
+  async viewMarket(id: string): Promise<any> {
+    const market = await this.marketRepository.findOne({ _id: id });
+
+    if (!market) {
+      throw new BadRequestException('Market not found');
+    }
+
+    return market;
   }
 
   remove(id: number) {

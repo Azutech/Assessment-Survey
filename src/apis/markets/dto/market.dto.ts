@@ -11,7 +11,7 @@ const CreateMarketSchema = z.object({
   marketBuildingsType: z.string().optional(),
   powerSource: z.string().optional(),
   gridInfrastructure: z.string().optional(),
-  marketDescription: z.string().min(1, 'Market description is required')
+  marketDescription: z.string().min(1, 'Market description is required'),
 });
 
 export class CreateMarketDto extends createZodDto(CreateMarketSchema) {}

@@ -8,6 +8,7 @@ import {
   Delete,
   Res,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { MarketsService } from './markets.service';
 import { CreateMarketDto } from './dto/market.dto';
@@ -27,4 +28,11 @@ export class MarketsController {
       .status(HttpStatus.CREATED)
       .json({ msg: 'Market added successfully', newMarket });
   }
+
+  @Get('viewMarket')
+  async viewMarket(@Query('id') id: string, @Res() res: Response) {
+    const market = await this.marketsService.viewMarket(id);
+    return res.status(HttpStatus.OK).json({ msg: 'Market found', market });
+  }
+
 }
