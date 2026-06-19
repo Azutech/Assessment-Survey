@@ -9,7 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { MarketsService } from './markets.service';
-import { CreateMarketDto, QueryMarketDto } from './dto/market.dto';
+import { CreateMarketDto } from './dto/market.dto';
 import { Response } from 'express';
 import { ZodValidationPipe } from 'nestjs-zod';
 

@@ -12,13 +12,10 @@ const CreateMarketSchema = z.object({
   powerSource: z.string().optional(),
   gridInfrastructure: z.string().optional(),
   marketDescription: z.string().min(1, 'Market description is required'),
+  LGA_Eligibility: z.boolean(),
+
 });
 
 export class CreateMarketDto extends createZodDto(CreateMarketSchema) {}
 
-const QueryMarketSchema = z.object({
-  search: z.string().optional(),
-  marketEntity: z.string().optional(),
-});
 
-export class QueryMarketDto extends createZodDto(QueryMarketSchema) {}

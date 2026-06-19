@@ -37,6 +37,9 @@ export class Market {
   @Prop({ type: String, required: false })
   marketDescription: string;
 
+  @Prop({ type: Boolean, required: false })
+  LGA_Eligibility: boolean;
+
   @Prop({
     type: Date,
     default: () => startOfSecond(new Date()),

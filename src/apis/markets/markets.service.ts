@@ -3,7 +3,7 @@ import {
   ConflictException,
   BadRequestException,
 } from '@nestjs/common';
-import { CreateMarketDto, QueryMarketDto } from './dto/market.dto';
+import { CreateMarketDto } from './dto/market.dto';
 import { MarketRepository } from './repository/market.repository';
 import { trimObjectStrings } from 'src/common/utils/trim-Object.util';
 import { MarketEntity } from './enums/market.enum';
