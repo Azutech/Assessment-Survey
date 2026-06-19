@@ -79,8 +79,49 @@ export class FileUploadService {
       );
     }
   }
+  async uploadFileSignature(file: any) {
+    // Validate file
+    if (!file || !this.isMimeTypeAllowed(file.mimetype)) {
+      throw new BadRequestException(
+        `Unsupported file type. Allowed types are: ${this.allowedMimeTypes.join(', ')}`,
+      );
+    }
 
-  async listFiles(): Promise<any[]> {
+    try {
+      const fileName = this.generateFileName(file.originalname);
+      const fileType = this.getFileExtension(file.originalname);
+
+      const params: PutObjectCommandInput = {
+        Bucket: this.configService.get<string>('NEW_BUCKET_NAME'),
+        Key: `${this.configService.get<string>('CRM_SIGNATURE_FILE_DIR')}/${fileName}.${fileType}`,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+        ACL: 'public-read', // Use a valid canned ACL string
+      };
+
+      // Upload file to S3/DigitalOcean Spaces
+      const data = await this.s3.send(new PutObjectCommand(params)); // Use send method with PutObjectCommand
+
+      const bucketName = this.configService.get<string>('NEW_BUCKET_NAME');
+      const spacesEndpoint = this.configService.get<string>('NEW_ENDPOINT');
+      const fileUrl = `${spacesEndpoint}/${bucketName}/${params.Key}`;
+
+      // Return uploaded file details
+      return {
+        name: fileName,
+        type: fileType,
+        url: fileUrl,
+      };
+    } catch (error: any) {
+      throw new Error(
+        `File upload failed: ${error.message}. Location: FileUploadService.uploadFile`,
+      );
+    }
+  }
+
+
+
+  async listFilesQuery(type?: string): Promise<any[]> {
     const bucketName = this.configService.get<string>('NEW_BUCKET_NAME');
     const directory = this.configService.get<string>('CRM_SURVEY_FILE_DIR');
     const spacesEndpoint = this.configService.get<string>('NEW_ENDPOINT');
@@ -94,20 +135,22 @@ export class FileUploadService {
       const data = await this.s3.listObjectsV2(params);
 
       if (data.Contents && data.Contents.length > 0) {
-        return (
-          data.Contents.map((file) => ({
-            key: file.Key,
-            url: `${spacesEndpoint}/${bucketName}/${file.Key}`, // Public file URL
-            size: file.Size,
-            lastModified: file.LastModified,
-          }))
-            // ✅ Sort descending by date (newest first)
-            .sort(
-              (a, b) =>
-                new Date(b.lastModified).getTime() -
-                new Date(a.lastModified).getTime(),
-            )
-        );
+        return data.Contents.map((file) => ({
+          key: file.Key,
+          url: `${spacesEndpoint}/${bucketName}/${file.Key}`,
+          size: file.Size,
+          lastModified: file.LastModified,
+        }))
+          .filter((file) => {
+            if (!type) return true;
+            const filename = file.key.split('/').pop()?.toLowerCase() ?? '';
+            return filename.includes(type.toLowerCase());
+          })
+          .sort(
+            (a, b) =>
+              new Date(b.lastModified).getTime() -
+              new Date(a.lastModified).getTime(),
+          );
       } else {
         throw new BadRequestException(
           'No files found in the specified directory.',
@@ -119,10 +162,9 @@ export class FileUploadService {
       );
     }
   }
-
-  async listFilesQuery(type?: string): Promise<any[]> {
+  async listSignatureQuery(type?: string): Promise<any[]> {
     const bucketName = this.configService.get<string>('NEW_BUCKET_NAME');
-    const directory = this.configService.get<string>('CRM_SURVEY_FILE_DIR');
+    const directory = this.configService.get<string>('CRM_SIGNATURE_FILE_DIR');
     const spacesEndpoint = this.configService.get<string>('NEW_ENDPOINT');
 
     try {

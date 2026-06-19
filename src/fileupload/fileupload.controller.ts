@@ -43,11 +43,33 @@ export class FileUploadController {
       files: uploadResults,
     });
   }
+  @Post('uploadFileSignature')
+  @UseInterceptors(FilesInterceptor('files', 10)) // Maximum 10 files at a time
+  async uploadMultipleSignature(
+    @Req() req: Request,
+    @Res() res: Response,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ): Promise<Response> {
+    if (!files || files.length === 0) {
+      throw new BadRequestException('No files uploaded');
+    }
 
-  @Get('list')
-  async listFiles(@Res() res: Response): Promise<Response> {
+    const uploadResults = [];
+    for (const file of files) {
+      const data = await this.fileUploadService.uploadFileSignature(file);
+      uploadResults.push(data);
+    }
+
+    return res.status(HttpStatus.OK).json({
+      message: 'Successfully uploaded files',
+      files: uploadResults,
+    });
+  }
+
+  @Get('listFilesQuery')
+  async listFilesQuery(@Res() res: Response, @Query('type') type?: string) {
     try {
-      const files = await this.fileUploadService.listFiles();
+      const files = await this.fileUploadService.listFilesQuery(type);
       return res.status(HttpStatus.OK).json({
         message: 'Files retrieved successfully',
         files,
@@ -59,11 +81,10 @@ export class FileUploadController {
       });
     }
   }
-
-  @Get('listFilesQuery')
-  async listFilesQuery(@Res() res: Response, @Query('type') type?: string) {
+  @Get('listSignatureQuery')
+  async listSignatureQuery(@Res() res: Response, @Query('type') type?: string) {
     try {
-      const files = await this.fileUploadService.listFilesQuery(type);
+      const files = await this.fileUploadService.listSignatureQuery(type);
       return res.status(HttpStatus.OK).json({
         message: 'Files retrieved successfully',
         files,
