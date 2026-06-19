@@ -27,19 +27,4 @@ export class MarketsController {
       .status(HttpStatus.CREATED)
       .json({ msg: 'Market added successfully', newMarket });
   }
-
-  @Get()
-  findAll() {
-    return this.marketsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.marketsService.findOne(+id);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.marketsService.remove(+id);
-  }
 }
