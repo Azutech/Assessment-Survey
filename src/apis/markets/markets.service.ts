@@ -3,7 +3,7 @@ import {
   ConflictException,
   BadRequestException,
 } from '@nestjs/common';
-import { CreateMarketDto } from './dto/market.dto';
+import { CreateMarketDto, QueryMarketDto } from './dto/market.dto';
 import { MarketRepository } from './repository/market.repository';
 import { trimObjectStrings } from 'src/common/utils/trim-Object.util';
 import { MarketEntity } from './enums/market.enum';
@@ -47,6 +47,20 @@ export class MarketsService {
     }
 
     return market;
+  }
+
+  async findAllMarkets(search?: string, marketEntity?: string): Promise<any> {
+    const markets = await this.marketRepository.findAllMarkets(
+      {},
+      search,
+      marketEntity,
+    );
+
+    if (markets.length === 0) {
+      return [];
+    }
+
+    return markets;
   }
 
   remove(id: number) {

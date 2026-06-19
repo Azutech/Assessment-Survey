@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Market } from '../entity/market.entity';
-import { Model } from 'mongoose';
+import { QueryFilter, Model } from 'mongoose';
 import { CreateMarketDto } from '../dto/market.dto';
 import { PropDataInput } from 'src/common/utils/utils.interface';
 import { MarketI } from '../interfaces/market.interface';
@@ -38,8 +38,43 @@ export class MarketRepository {
     return createdMarket.save();
   }
 
-  async findAll(): Promise<Market[]> {
-    return this.marketModel.find().exec();
+  async findAllMarkets(
+    where: PropDataInput,
+    search?: string,
+    marketEntity?: string,
+  ) {
+    const query: any = { ...where };
+
+    const andConditions: any[] = [];
+
+    if (search) {
+      andConditions.push({
+        $or: [
+          { marketName: { $regex: search, $options: 'i' } },
+          { marketLGA: { $regex: search, $options: 'i' } },
+          { marketState: { $regex: search, $options: 'i' } },
+          { marketEntity: { $regex: search, $options: 'i' } },
+          { popularLandmark: { $regex: search, $options: 'i' } },
+          { marketDescription: { $regex: search, $options: 'i' } },
+        ],
+      });
+    }
+
+    if (marketEntity) {
+      andConditions.push({
+        marketEntity: {
+          $regex: `^${marketEntity}$`,
+          $options: 'i',
+        },
+      });
+    }
+
+    if (andConditions.length > 0) {
+      query.$and = andConditions;
+    }
+
+    const results = await this.marketModel.find(query).exec();
+    return results;
   }
 
   async findOne(

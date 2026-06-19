@@ -15,3 +15,10 @@ const CreateMarketSchema = z.object({
 });
 
 export class CreateMarketDto extends createZodDto(CreateMarketSchema) {}
+
+const QueryMarketSchema = z.object({
+  search: z.string().optional(),
+  marketEntity: z.string().optional(),
+});
+
+export class QueryMarketDto extends createZodDto(QueryMarketSchema) {}
