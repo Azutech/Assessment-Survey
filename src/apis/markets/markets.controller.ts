@@ -35,12 +35,14 @@ export class MarketsController {
 
   @Get('findAllMarkets')
   // @UsePipes(new ZodValidationPipe())
-  async findAllMarkets(@Query() query: QueryMarketDto, @Res() res: Response) {
-    const markets = await this.marketsService.findAllMarkets(query);
+  async findAllMarkets(
+    @Query() query: { search?: string; marketEntity?: string },
+    @Res() res: Response,
+  ) {
+    const markets = await this.marketsService.findAllMarkets(
+      query.search,
+      query.marketEntity,
+    );
     return res.status(HttpStatus.OK).json({ msg: 'Markets found', markets });
   }
 }
-
-`bvnm,./?.,mnbvcvbnm,l.;'
-';lkjhgfdghjkl;'
-;lkjhgfdghjkl;'`;
