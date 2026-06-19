@@ -4,4 +4,5 @@ export interface MarketI {
   marketState: string;
   marketLGA: string;
   marketGPS?: string;
+  popularLandmark?: string;
 }

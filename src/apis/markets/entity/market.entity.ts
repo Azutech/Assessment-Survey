@@ -22,6 +22,9 @@ export class Market {
   @Prop({ type: String, required: false })
   marketGPS: string;
 
+  @Prop({ type: String, required: false })
+  popularLandmark: string;
+
   @Prop({
     type: Date,
     default: () => startOfSecond(new Date()),

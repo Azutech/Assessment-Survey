@@ -20,6 +20,7 @@ export class MarketRepository {
           marketState: dto.marketState,
           marketLGA: dto.marketLGA,
           marketGPS: dto.marketGPS,
+          popularLandmark: dto.popularLandmark,
         },
       },
       {
