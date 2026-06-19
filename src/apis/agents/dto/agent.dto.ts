@@ -1,27 +1,45 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 
+const blockedDomains = [
+  'tempmail.com',
+  '10minutemail.com',
+  'guerrillamail.com',
+  'mailinator.com',
+  'trashmail.com',
+];
+
 const CreateAgentSchema = z.object({
-  fullName: z.string().min(1, 'Full name is required'),
-  email: z.string().min(1, 'Email is required'),
-  password: z.string().min(6, 'Password must be at least 6 characters long'),
-  phoneNumber: z.string().min(1, 'Phone number is required'),
-  avatar: z.string().optional(),
+  fullName: z.string().trim().min(2, 'Full name is required'),
+
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .email('Invalid email address')
+    .refine(
+      (email) => {
+        const domain = email.split('@')[1]?.toLowerCase();
+        return !blockedDomains.includes(domain);
+      },
+      { message: 'Temporary email addresses are not allowed' },
+    ),
+
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters long')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/\d/, 'Password must contain at least one number')
+    .regex(
+      /[@$!%*?&.#^()_\-+=]/,
+      'Password must contain at least one special character',
+    ),
+
+  phoneNumber: z.string().trim().min(1, 'Phone number is required'),
 });
 
-export class CreateAgentDto extends createZodDto(CreateAgentSchema) {}
-
-// const UpdateAgentSchema = z.object({
-//   fullName: z.string().min(1, 'Full name is required').optional(),
-//   email: z.string().email('Invalid email address').min(1, 'Email is required').optional(),
-//   password: z.string().min(6, 'Password must be at least 6 characters long').optional(),
-//   phoneNumber: z.string().min(1, 'Phone number is required').optional(),
-//   avatar: z.string().optional(),
-//   lastActiveTime: z.date().optional(),
-//   lastLocation: z.string().optional(),
-//   uniqueId: z.string().optional(),
-//   status: z.string().optional(),
-//   totalResponse: z.number().optional(),
-//   userType: z.string().optional(),
-// });
-// export class UpdateAgentDto extends createZodDto(UpdateAgentSchema) {}
+export class CreateAgentDto extends createZodDto(CreateAgentSchema) {
+  uniqueId: string;
+  avatar: string;
+}
