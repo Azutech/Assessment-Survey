@@ -14,8 +14,9 @@ import {
 } from '@nestjs/common';
 import { FileUploadService } from './fileupload.service';
 import { Request, Response } from 'express';
+import type * as Multer from 'multer';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+
 
 @Controller('file-upload')
 export class FileUploadController {
