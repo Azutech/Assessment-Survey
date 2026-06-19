@@ -3,34 +3,50 @@ import {
   Get,
   Post,
   Body,
-  Patch,
+  UsePipes,
   Param,
   Delete,
+  Res,
+  HttpStatus,
+  Query,
+  Search,
 } from '@nestjs/common';
 import { MarketsService } from './markets.service';
-import { CreateMarketDto } from './dto/market.dto';
+import { CreateMarketDto, QueryMarketDto } from './dto/market.dto';
+import { Response } from 'express';
+import { ZodValidationPipe } from 'nestjs-zod';
 
 @Controller('markets')
 export class MarketsController {
   constructor(private readonly marketsService: MarketsService) {}
 
-  @Post()
-  create(@Body() createMarketDto: CreateMarketDto) {
-    return this.marketsService.create(createMarketDto);
+  @Post('addMarket')
+  @UsePipes(new ZodValidationPipe())
+  async create(@Body() createMarketDto: CreateMarketDto, @Res() res: Response) {
+    const newMarket = await this.marketsService.addMarket(createMarketDto);
+
+    return res
+      .status(HttpStatus.CREATED)
+      .json({ msg: 'Market added successfully', newMarket });
   }
 
-  @Get()
-  findAll() {
-    return this.marketsService.findAll();
+  @Get('viewMarket')
+  async viewMarket(@Query('id') id: string, @Res() res: Response) {
+    const market = await this.marketsService.viewMarket(id);
+    return res.status(HttpStatus.OK).json({ msg: 'Market found', market });
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.marketsService.findOne(+id);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.marketsService.remove(+id);
+  @Get('findAllMarkets')
+  // @UsePipes(new ZodValidationPipe())
+  async findAllMarkets(
+    @Res() res: Response,
+    @Query('search') search?: string,
+    @Query('marketEntity') marketEntity?: string,
+  ) {
+    const markets = await this.marketsService.findAllMarkets(
+      search,
+      marketEntity,
+    );
+    return res.status(HttpStatus.OK).json({ msg: 'Markets found', markets });
   }
 }

@@ -22,6 +22,21 @@ export class Market {
   @Prop({ type: String, required: false })
   marketGPS: string;
 
+  @Prop({ type: String, required: false })
+  popularLandmark: string;
+
+  @Prop({ type: String, required: false })
+  marketBuildingsType: string;
+
+  @Prop({ type: String, required: false })
+  powerSource: string;
+
+  @Prop({ type: String, required: false })
+  gridInfrastructure: string;
+
+  @Prop({ type: String, required: false })
+  marketDescription: string;
+
   @Prop({
     type: Date,
     default: () => startOfSecond(new Date()),

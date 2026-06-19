@@ -1,7 +1,24 @@
-export class CreateMarketDto {
-  marketName: string;
-  marketEntity: string;
-  marketState: string;
-  marketLGA: string;
-  marketGPS?: string;
-}
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
+
+const CreateMarketSchema = z.object({
+  marketName: z.string().min(1, 'Market name is required'),
+  marketEntity: z.string().min(1, 'Market entity is required'),
+  marketState: z.string().min(1, 'Market state is required'),
+  marketLGA: z.string().min(1, 'Market LGA is required'),
+  marketGPS: z.string().optional(),
+  popularLandmark: z.string().optional(),
+  marketBuildingsType: z.string().optional(),
+  powerSource: z.string().optional(),
+  gridInfrastructure: z.string().optional(),
+  marketDescription: z.string().min(1, 'Market description is required'),
+});
+
+export class CreateMarketDto extends createZodDto(CreateMarketSchema) {}
+
+const QueryMarketSchema = z.object({
+  search: z.string().optional(),
+  marketEntity: z.string().optional(),
+});
+
+export class QueryMarketDto extends createZodDto(QueryMarketSchema) {}

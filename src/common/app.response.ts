@@ -3,6 +3,7 @@ import {
   Catch,
   ArgumentsHost,
   HttpException,
+  HttpStatus,
   Logger,
 } from '@nestjs/common';
 
@@ -13,15 +14,30 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
+    if (exception?.constructor?.name === 'ZodValidationException') {
+      const zodError = exception.getZodError?.();
+      const errors =
+        zodError?.issues?.map((e: any) => ({
+          field: e.path.join('.'),
+          message: e.message,
+        })) ?? [];
 
-    // Log with service location if available
+      return response.status(HttpStatus.BAD_REQUEST).json({
+        success: false,
+        message: 'Validation failed',
+        status: HttpStatus.BAD_REQUEST,
+        timestamp: new Date().toISOString(),
+        errors,
+      });
+    }
+
     this.logger.error({
       message: exception.message,
-      status: exception.status || 500,
+      status: exception.status || HttpStatus.INTERNAL_SERVER_ERROR,
       stack: exception.stack,
     });
 
-    const status = exception.getStatus?.() || 500;
+    const status = exception.getStatus?.() || HttpStatus.INTERNAL_SERVER_ERROR;
     const message = exception.message || 'Internal server error';
 
     response.status(status).json({

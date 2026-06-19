@@ -5,6 +5,7 @@ import { GlobalExceptionFilter } from './common/app.response';
 import { HttpLogger } from './common/middleware/http-logger.middleware';
 import { NestExpressApplication } from '@nestjs/platform-express/interfaces/nest-express-application.interface';
 import { Logger } from '@nestjs/common/services/logger.service';
+import { ZodValidationPipe } from 'nestjs-zod';
 
 async function bootstrap() {
   const logger = new Logger('Assessment-Survey-V1');
@@ -17,6 +18,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api/v1');
   app.use(new HttpLogger().use);
+  app.useGlobalPipes(new ZodValidationPipe());
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.enableCors({
     origin: '*', // Allow all origins
