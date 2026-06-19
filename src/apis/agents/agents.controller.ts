@@ -33,7 +33,7 @@ export class AgentsController {
 
   @Get('agentDashbord')
   async viewDashboard(
-    @Query() id: string,
+    @Query('id') id: string,
     @Res() res: Response,
   ): Promise<Response> {
     const agent = await this.agentsService.agentDashboard(id);
