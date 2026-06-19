@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MarketsModule } from './apis/markets/markets.module';
 import { SurveysModule } from './apis/surveys/surveys.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AgentsModule } from './apis/agents/agents.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     }),
     MarketsModule,
     SurveysModule,
+    AgentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

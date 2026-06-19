@@ -4,12 +4,9 @@ import {
   Post,
   Body,
   UsePipes,
-  Param,
-  Delete,
   Res,
   HttpStatus,
   Query,
-  Search,
 } from '@nestjs/common';
 import { MarketsService } from './markets.service';
 import { CreateMarketDto, QueryMarketDto } from './dto/market.dto';
@@ -38,15 +35,12 @@ export class MarketsController {
 
   @Get('findAllMarkets')
   // @UsePipes(new ZodValidationPipe())
-  async findAllMarkets(
-    @Res() res: Response,
-    @Query('search') search?: string,
-    @Query('marketEntity') marketEntity?: string,
-  ) {
-    const markets = await this.marketsService.findAllMarkets(
-      search,
-      marketEntity,
-    );
+  async findAllMarkets(@Query() query: QueryMarketDto, @Res() res: Response) {
+    const markets = await this.marketsService.findAllMarkets(query);
     return res.status(HttpStatus.OK).json({ msg: 'Markets found', markets });
   }
 }
+
+`bvnm,./?.,mnbvcvbnm,l.;'
+';lkjhgfdghjkl;'
+;lkjhgfdghjkl;'`;
