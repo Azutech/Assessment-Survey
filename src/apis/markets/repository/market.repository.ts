@@ -8,23 +8,6 @@ import { CreateMarketDto } from '../dto/market.dto';
 export class MarketRepository {
   constructor(@InjectModel(Market.name) private marketModel: Model<Market>) {}
 
-//   async upsert(dto: CreateMarketDto) {
-//     return this.marketModel.findOneAndReplace(
-//       { marketName: dto.marketName }, // ✅ correct field
-//       {
-//         $set: {
-//           marketName: dto.marketName,
-//           marketEntity: dto.marketEntity,
-//           marketState: dto.marketState,
-//           LGA: dto.marketLGA,
-//           marketGPS: dto.marketGPS,
-//         },
-//       },
-//       { upsert: true, new: true },
-//     );
-//   }
-
-
 async upsert(dto: CreateMarketDto) {
   return this.marketModel.findOneAndUpdate(
     { marketName: dto.marketName },
