@@ -21,6 +21,10 @@ export class MarketRepository {
           marketLGA: dto.marketLGA,
           marketGPS: dto.marketGPS,
           popularLandmark: dto.popularLandmark,
+          marketBuildingsType: dto.marketBuildingsType,
+          powerSource: dto.powerSource,
+          gridInfrastructure: dto.gridInfrastructure,
+          marketDescription: dto.marketDescription,
         },
       },
       {

@@ -5,4 +5,8 @@ export interface MarketI {
   marketLGA: string;
   marketGPS?: string;
   popularLandmark?: string;
+  marketBuildingsType?: string;
+  powerSource?: string;
+  gridInfrastructure?: string;
+  marketDescription?: string;
 }

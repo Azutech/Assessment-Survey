@@ -7,7 +7,6 @@ import {
   Logger,
 } from '@nestjs/common';
 
-
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   private logger = new Logger('GlobalExceptionFilter');
