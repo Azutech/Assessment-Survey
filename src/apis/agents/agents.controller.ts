@@ -45,12 +45,13 @@ export class AgentsController {
   @Get('findAllAgents')
   async allAgents(
     @Query('search') search: string,
-    @Res() res: Response
+    @Res() res: Response,
   ): Promise<Response> {
-    const agents = await this.agentsService.findAllAgentsWithCustomerCount(search);
+    const agents =
+      await this.agentsService.findAllAgentsWithCustomerCount(search);
     return res.status(HttpStatus.OK).json({
       msg: `Agents returned`,
-      agents
-    })
+      agents,
+    });
   }
 }
