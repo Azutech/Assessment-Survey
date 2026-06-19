@@ -6,6 +6,7 @@ import { MarketsModule } from './apis/markets/markets.module';
 import { SurveysModule } from './apis/surveys/surveys.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AgentsModule } from './apis/agents/agents.module';
+import { FileuploadModule } from './fileupload/fileupload.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AgentsModule } from './apis/agents/agents.module';
     MarketsModule,
     SurveysModule,
     AgentsModule,
+    FileuploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],
