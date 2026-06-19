@@ -47,7 +47,7 @@ export class AgentsController {
     @Query('search') search: string,
     @Res() res: Response
   ): Promise<Response> {
-    const agents = await this.agentsService.findAllAgents(search);
+    const agents = await this.agentsService.findAllAgentsWithCustomerCount(search);
     return res.status(HttpStatus.OK).json({
       msg: `Agents returned`,
       agents
