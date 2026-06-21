@@ -28,7 +28,7 @@ export class AgentRepository {
     return this.agentModel.findOne(where).exec();
   }
 
-    async updateinfo(where: any, data: any): Promise<Agent> {
+  async updateinfo(where: any, data: any): Promise<Agent> {
     try {
       return await this.agentModel.findOneAndUpdate(where, data, {
         new: true,
