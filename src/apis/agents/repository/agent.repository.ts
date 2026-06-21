@@ -28,6 +28,17 @@ export class AgentRepository {
     return this.agentModel.findOne(where).exec();
   }
 
+    async updateinfo(where: any, data: any): Promise<Agent> {
+    try {
+      return await this.agentModel.findOneAndUpdate(where, data, {
+        new: true,
+      });
+      // .select('-password');
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async findAll(where: PropDataInput, search?: string): Promise<any[]> {
     const agentMatch: any = { ...where };
 

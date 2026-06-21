@@ -35,11 +35,37 @@ const CreateAdminSchema = z.object({
       /[@$!%*?&.#^()_\-+=]/,
       'Password must contain at least one special character',
     ),
-
-  phoneNumber: z.string().trim().min(1, 'Phone number is required'),
 });
 
 export class CreateAdminDto extends createZodDto(CreateAdminSchema) {
-  uniqueId: string;
+  avatar: string;
+}
+
+const loginAdminSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .email('Invalid email address')
+    .refine(
+      (email) => {
+        const domain = email.split('@')[1]?.toLowerCase();
+        return !blockedDomains.includes(domain);
+      },
+      { message: 'Temporary email addresses are not allowed' },
+    ),
+
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters long')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/\d/, 'Password must contain at least one number')
+    .regex(
+      /[@$!%*?&.#^()_\-+=]/,
+      'Password must contain at least one special character',
+    ),
+});
+export class LoginAdminDto extends createZodDto(loginAdminSchema) {
   avatar: string;
 }
