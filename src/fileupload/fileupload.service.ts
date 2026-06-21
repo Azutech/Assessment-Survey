@@ -119,8 +119,6 @@ export class FileUploadService {
     }
   }
 
-
-
   async listFilesQuery(type?: string): Promise<any[]> {
     const bucketName = this.configService.get<string>('NEW_BUCKET_NAME');
     const directory = this.configService.get<string>('CRM_SURVEY_FILE_DIR');
