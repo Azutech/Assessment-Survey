@@ -14,7 +14,6 @@ import { Agent, agentSchema } from '../agents/entity/agent.entity';
     MongooseModule.forFeature([
       { name: Admin.name, schema: AdminSchema },
       { name: Agent.name, schema: agentSchema },
-      // { name: Supervisor.name, schema: supervisorSchema },
     ]),
   ],
   controllers: [AdminController],

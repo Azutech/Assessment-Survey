@@ -1,4 +1,3 @@
-// markets/seeds/run-seed.ts
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../app.module';
 import { marketsSeed } from '../apis/markets/seeds.markets';
