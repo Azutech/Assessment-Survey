@@ -15,4 +15,11 @@ export class SurveyRepository {
     const newCustomer = new this.surveyModel(customer);
     return newCustomer.save();
   }
+
+  async findOne(
+    where: PropDataInput,
+    attribute?: string,
+  ): Promise<Survey | null> {
+    return this.surveyModel.findOne(where).select(attribute).exec();
+  }
 }
