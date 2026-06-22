@@ -35,10 +35,7 @@ export class AgentsController {
   }
   @Post('login')
   @UsePipes(new ZodValidationPipe())
-  async validateAgent(
-    @Body() createAgentDto: LoginDto,
-    @Res() res: Response,
-  ) {
+  async validateAgent(@Body() createAgentDto: LoginDto, @Res() res: Response) {
     const agent = await this.agentsService.validateAgent(createAgentDto);
     return res
       .status(HttpStatus.CREATED)
@@ -51,8 +48,7 @@ export class AgentsController {
     @Req() req: any,
     @Res() res: Response,
   ): Promise<Response> {
-
-    const userId = req.user.userId
+    const userId = req.user.userId;
     const agent = await this.agentsService.agentDashboard(userId);
     return res
       .status(HttpStatus.OK)

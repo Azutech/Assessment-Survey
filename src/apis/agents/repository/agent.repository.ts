@@ -30,7 +30,9 @@ export class AgentRepository {
 
   async updateinfo(where: any, data: any): Promise<Agent> {
     try {
-      return await this.agentModel.findOneAndUpdate(where, data, { returnDocument: 'after' });
+      return await this.agentModel.findOneAndUpdate(where, data, {
+        returnDocument: 'after',
+      });
       // .select('-password');
     } catch (error) {
       throw error;

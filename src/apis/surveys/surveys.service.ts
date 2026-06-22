@@ -52,9 +52,7 @@ export class SurveysService {
     ]);
 
     if (findPhoneNumber) {
-      throw new ConflictException(
-        `This Phone Number  is already in use.`,
-      );
+      throw new ConflictException(`This Phone Number  is already in use.`);
     }
 
     if (!findMarket) {
@@ -71,7 +69,15 @@ export class SurveysService {
 
     const resolvedAddress = await this.getAddressFromGPS(GPS);
     const appliances = this.processAppliances(surveyDto.appliances);
+
+    const start = new Date(startTime).getTime();
+    const end = new Date(endTime).getTime();
+
+    if (end < start) {
+      throw new BadRequestException('endTime cannot be before startTime');
+    }
     const surveyDuration = this.calculateSurveyDuration(startTime, endTime);
+
 
     const newCustomer = await this.surveyRepository.create({
       ...surveyDto,

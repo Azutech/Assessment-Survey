@@ -28,7 +28,9 @@ export class SurveysController {
   ) {
     createSurveyDto.userId = req.user.userId;
     const survey = await this.surveysService.addAgentSurvey(createSurveyDto);
-    return res.status(HttpStatus.CREATED).json({message: "survey added", survey });
+    return res
+      .status(HttpStatus.CREATED)
+      .json({ message: 'survey added', survey });
   }
 
   // @Get()
