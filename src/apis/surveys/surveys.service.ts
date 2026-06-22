@@ -11,7 +11,7 @@ import { firstValueFrom } from 'rxjs';
 import { SurveyRepository } from './repository/survey.repository';
 import { MarketRepository } from '../markets/repository/market.repository';
 import { AgentRepository } from '../agents/repository/agent.repository';
-import { shopTypeToSectionMap } from './constants/survey.constants';
+import { APPLIANCES, shopTypeToSectionMap } from './constants/survey.constants';
 
 @Injectable()
 export class SurveysService {
@@ -68,6 +68,29 @@ export class SurveysService {
 
     const hasPictures =
       images && typeof images === 'object' && Object.keys(images).length > 0;
+
+    const resolvedAddress = await this.getAddressFromGPS(GPS);
+    const appliances = this.processAppliances(surveyDto.appliances);
+    const surveyDuration = this.calculateSurveyDuration(startTime, endTime);
+
+    const newCustomer = await this.surveyRepository.create({
+      ...surveyDto,
+      hasPictures: !!hasPictures,
+      LGA_Eligibility: findMarket ? findMarket.LGA_Eligibility : false,
+      marketState: findMarket ? findMarket.marketState : undefined,
+      marketLGA: findMarket ? findMarket.marketLGA : undefined,
+      marketEntity: findMarket ? findMarket.marketEntity : undefined,
+      businessName: businessName.trim(),
+      agentDetails: `${agent.fullName}`,
+      agentId: `${agent._id.toString()}`,
+      duration: this.formatDuration(surveyDuration),
+      startTime: new Date(startTime),
+      endTime: new Date(endTime),
+      address: resolvedAddress || undefined,
+      category: 'agent',
+      appliances,
+      shopSection,
+    });
   }
 
   private async getAddressFromGPS(gps: string): Promise<string | null> {
@@ -153,5 +176,24 @@ export class SurveysService {
     const secs = seconds % 60;
 
     return `${hours}h ${minutes}m ${secs}s`;
+  }
+
+  private processAppliances(appliancesDto: any[]) {
+    return appliancesDto
+      .map((item) => {
+        const found = APPLIANCES.find((a) => a.value === item.name);
+        if (!found) return null;
+
+        const totalConsumption = found.watts * item.quantity;
+
+        return {
+          name: item.name,
+          quantity: item.quantity,
+          hoursPerDay: item.hoursPerDay,
+          watts: found.watts,
+          totalConsumption,
+        };
+      })
+      .filter(Boolean);
   }
 }

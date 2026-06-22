@@ -15,7 +15,7 @@ export interface SurveyI {
   currentEnergySource: string;
   generatorOwnership: boolean;
   energyChallenges: string[];
-  applianceUsed: string;
+  applianceUsed?: string;
   willingnessToPay: string;
   paymentPreference: string;
   electricitySupply: string;
@@ -36,17 +36,17 @@ export interface SurveyI {
   loadProfile?: string;
   estimatedFutureLoad?: string;
   generatorSize?: string;
-  consent?: string;
+  consent?: boolean;
   signature?: string;
   additionalComments?: string;
   collectionFrequency?: string;
-  images?: Images;
+  images: Images;
   userId?: string;
 }
 
 export interface Images {
   shopExteriorImage: string;
-  shopInteriorImage1: string;
-  shopInteriorImage2: string;
-  shopInteriorImage3: string;
+  shopInteriorImage1?: string;
+  shopInteriorImage2?: string;
+  shopInteriorImage3?: string;
 }

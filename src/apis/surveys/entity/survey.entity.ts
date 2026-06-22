@@ -137,8 +137,8 @@ export class Survey {
   @Prop({ type: String, required: false })
   signature: string;
 
-  @Prop({ type: String, required: false })
-  consent: string;
+  @Prop({ type: Boolean, required: false })
+  consent: boolean;
 
   @Prop({ type: String, required: false })
   generatorSize: string;

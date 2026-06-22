@@ -2,6 +2,8 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 
+
+
 const ImagesSchema = z.object({
   shopExteriorImage: z.string().url('Invalid exterior image URL'),
   shopInteriorImage1: z.string().url().optional().nullable(),
@@ -26,7 +28,9 @@ const CreateSurveySchema = z
     businessName: z.string().trim().min(1, 'Business name is required'),
     businessType: z.string().trim().min(1, 'Business type is required'),
     customerName: z.string().trim().min(1, 'Customer name is required'),
-    gender: z.enum(['Male', 'Female']).optional(),
+    gender: z.enum(['Male', 'Female'], {
+      error: 'Gender is required',
+    }),
     phoneNumber: z.string().trim().min(1, 'Phone number is required'),
     ageRange: z.enum([
       'Under 18',
@@ -37,10 +41,8 @@ const CreateSurveySchema = z
       'Above 55',
     ]),
     numberOfEmployees: z.coerce
-      .number()
-      .int()
-      .min(0, 'Must be 0 or more')
-      .optional(),
+      .string()
+      .min(0, 'Must be 0 or more'),
     shopStatus: z.enum(['occupied', 'unoccupied', 'locked up']).optional(),
 
     // Step 2: Location
@@ -52,8 +54,8 @@ const CreateSurveySchema = z
       .regex(/^-?\d+(\.\d+)? -?\d+(\.\d+)?$/, 'GPS must be in format: lat lng'),
     // shopSection: z.string().trim().optional(),
     // shopSectionNumber: z.string().trim().optional(),
-    shopBlock: z.string().trim().optional(),
-    shopNumber: z.string().trim().optional(),
+    shopBlock: z.string().trim(),
+    shopNumber: z.string().trim(),
 
     // Step 3: Energy Profile
     currentEnergySource: z.enum([
@@ -64,8 +66,8 @@ const CreateSurveySchema = z
       'battery-lamp',
       'none',
     ]),
-    generatorOwnership: z.boolean().optional(),
-    generatorSize: z.string().trim().optional(),
+    generatorOwnership: z.boolean(),
+    generatorSize: z.string().trim(),
     electricitySupply: z.enum(['0-2', '2-5', '5-10', '10-12', '>12']),
     energyChallenges: z
       .array(
@@ -92,7 +94,7 @@ const CreateSurveySchema = z
       .default([]),
 
     // Step 5: Commercial & Consent
-    willingnessToPay: z.string().trim().optional(),
+    willingnessToPay: z.string().trim(),
     paymentPreference: z
       .enum([
         'prepaid-card',
@@ -100,8 +102,7 @@ const CreateSurveySchema = z
         'bank-transfer',
         'mobile-money',
         'pay-as-you-go',
-      ])
-      .optional(),
+      ]),
     applianceUsed: z
       .enum(['Light', 'Medium sized', 'Heavy appliances'])
       .optional(),
@@ -155,5 +156,5 @@ export class CreateSurveyDto extends createZodDto(CreateSurveySchema) {
   marketEntity: string;
   shopSection: string;
   shopSectionNumber: string;
-  userId: string;
+  userId?: string;
 }
