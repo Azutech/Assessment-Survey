@@ -276,4 +276,172 @@ export class SurveyRepository {
       throw error;
     }
   }
+
+
+
+    async findAllCustomerExport(
+    where: PropDataInput = {},
+    agentId?: string,
+    marketName?: string,
+    marketEntity?: string,
+    marketLGA?: string,
+    customerName?: string,
+    LGA_Eligibility?: boolean,
+    hasPictures?: boolean,
+    page: number = 1,
+    limit: number = 500,
+  ): Promise<{ data: any[] }> {
+    try {
+      const pipeline: any[] = [];
+      const skip = (page - 1) * limit;
+
+      // ✅ Build match query
+      const match: any = { ...where };
+
+      if (LGA_Eligibility !== undefined) {
+        match.LGA_Eligibility = LGA_Eligibility;
+      }
+
+      if (hasPictures !== undefined) {
+        match.hasPictures = hasPictures;
+      }
+
+      if (customerName) {
+        match.customerName = { $regex: new RegExp(customerName, 'i') };
+      }
+      if (agentId) {
+        match.agentId = agentId;
+      }
+
+      if (marketEntity) {
+        match.marketEntity = marketEntity;
+      }
+      if (marketLGA) {
+        match.marketLGA = marketLGA;
+      }
+
+      if (marketName) {
+        match.marketName = marketName;
+      }
+
+      pipeline.push({ $match: match });
+
+      // =========================
+      // ✅ AGENT LOOKUP
+      // =========================
+      pipeline.push({
+        $lookup: {
+          from: 'agents',
+          let: { agentId: '$agentId' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ['$_id', { $toObjectId: '$$agentId' }],
+                },
+              },
+            },
+            {
+              $project: {
+                supervisorId: 1,
+                supervisorName: 1,
+              },
+            },
+          ],
+          as: 'agent',
+        },
+      });
+
+      pipeline.push({
+        $unwind: {
+          path: '$agent',
+          preserveNullAndEmptyArrays: true,
+        },
+      });
+
+      // =========================
+      // ✅ SORT + PAGINATION
+      // =========================
+      pipeline.push({ $sort: { createdAt: -1 } });
+      pipeline.push({ $skip: skip });
+      pipeline.push({ $limit: limit });
+
+      // =========================
+      // ✅ FINAL PROJECTION (LEAN)
+      // =========================
+      pipeline.push({
+        $project: {
+          _id: { $toString: '$_id' }, // 👈
+          businessName: 1,
+          businessType: 1,
+          customerName: 1,
+          marketName: 1,
+          marketEntity: 1,
+          businessCategory: 1,
+          phoneNumber: 1,
+          gender: 1,
+          shopNumber: 1,
+          ageRange: 1,
+          numberOfEmployees: 1,
+          currentEnergySource: 1,
+          generatorOwnership: 1,
+          energyChallenges: 1,
+          applianceUsed: 1,
+          willingnessToPay: 1,
+          paymentPreference: 1,
+          electricitySupply: 1,
+          dailyEnergyConsumption: 1,
+          GPS: 1,
+          address: 1,
+          duration: 1,
+          startTime: 1,
+          endTime: 1,
+          loadProfile: 1,
+          estimatedFutureLoad: 1,
+          shopBlock: 1,
+          shopStatus: 1,
+          shopSectionNumber: 1,
+          shopSection: 1,
+          marketLGA: 1,
+          additionalComments: 1,
+          signature: 1,
+          consent: 1,
+          appliances: 1,
+          generatorSize: 1,
+          collectionFrequency: 1,
+          agentId: 1,
+          agentDetails: 1,
+          LGA_Eligibility: 1,
+          hasPictures: 1,
+          category: 1,
+          createdAt: 1,
+          status: 1,
+
+          // ✅ keep only needed image fields (avoid BSON issues)
+          images: {
+            shopExteriorImage: '$images.shopExteriorImage',
+            shopInteriorImage1: '$images.shopInteriorImage1',
+            shopInteriorImage2: '$images.shopInteriorImage2',
+            shopInteriorImage3: '$images.shopInteriorImage3',
+          },
+
+          comment: 1,
+          auditor: 1,
+
+          // ✅ from agent lookup
+          supervisorId: '$agent.supervisorId',
+          supervisorName: '$agent.supervisorName',
+        },
+      });
+
+      // =========================
+      // ✅ EXECUTE
+      // =========================
+      const data = await this.surveyModel.aggregate(pipeline).exec();
+
+      return { data };
+    } catch (error) {
+      throw error;
+    }
+  }
 }
