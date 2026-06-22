@@ -17,6 +17,7 @@ import { CreateSurveyDto, StatusUpdateDto } from './dto/survey.dto';
 import { Response } from 'express';
 import { JwtAuthGuard } from 'src/guards/jwt/jwt.guard';
 import { AdminOnlyGuard } from 'src/guards/admin.guard';
+import { OptionalBoolPipe } from 'src/common/utils/parse-boolean.util';
 
 @Controller('surveys')
 export class SurveysController {
@@ -29,8 +30,12 @@ export class SurveysController {
     @Body() createSurveyDto: CreateSurveyDto,
     @Res() res: Response,
   ) {
+    const payload = {
+      ...createSurveyDto,
+      userId: req.user.userId,
+    };
     createSurveyDto.userId = req.user.userId;
-    const survey = await this.surveysService.addAgentSurvey(createSurveyDto);
+    const survey = await this.surveysService.addAgentSurvey(payload);
     return res
       .status(HttpStatus.CREATED)
       .json({ message: 'survey added', survey });
@@ -65,5 +70,48 @@ export class SurveysController {
     return res
       .status(HttpStatus.OK)
       .json({ msg: 'Customer retrieved successfully', survey });
+  }
+
+
+
+    @Get('viewAllCustomer')
+  async findAll(
+    @Res() res: Response,
+    @Query('search') search?: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('agentDetails') agentDetails?: string,
+    @Query('marketLGA') marketLGA?: string,
+    @Query('marketState') marketState?: string,
+    @Query('marketName') marketName?: string,
+    @Query('currentEnergySource') currentEnergySource?: string,
+    @Query('LGA_Eligibility', OptionalBoolPipe) LGA_Eligibility?: boolean,
+    @Query('hasPictures', OptionalBoolPipe) hasPictures?: boolean,
+    @Query('status') status?: string | string[], // 🔥 added
+    @Query('gpsFilter') gpsFilter?: 'withGPS' | 'withoutGPS', // 🔥 NEW
+    @Query('dateRange') dateRange?: string, // 🔥 NEW
+    @Query('date') date?: string, // 🔥 NEW
+    @Query('marketEntity') marketEntity?: string, // 🔥 NE  W
+  ) {
+    const customers = await this.surveysService.viewAllCustomers(
+      search,
+      marketLGA,
+      marketEntity,
+      marketState,
+      LGA_Eligibility,
+      hasPictures,
+      currentEnergySource,
+      agentDetails,
+      marketName,
+      status,
+      gpsFilter,
+      dateRange,
+      Number(page),
+      Number(limit),
+    );
+
+    return res
+      .status(HttpStatus.OK)
+      .json({msg: 'Customers retrieved successfully', customers});
   }
 }
