@@ -14,13 +14,13 @@ import { CreateSurveyDto } from './dto/survey.dto';
 export class SurveysController {
   constructor(private readonly surveysService: SurveysService) {}
 
-  @Post()
-  create(@Body() createSurveyDto: CreateSurveyDto) {
-    return this.surveysService.create(createSurveyDto);
-  }
+  // @Post()
+  // create(@Body() createSurveyDto: CreateSurveyDto) {
+  //   return this.surveysService.create(createSurveyDto);
+  // }
 
-  @Get()
-  findAll() {
-    return this.surveysService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.surveysService.findAll();
+  // }
 }

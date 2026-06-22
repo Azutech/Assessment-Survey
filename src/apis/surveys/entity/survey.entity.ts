@@ -167,3 +167,5 @@ export class Survey {
   })
   createdAt: Date;
 }
+
+export const surveySchema = SchemaFactory.createForClass(Survey);

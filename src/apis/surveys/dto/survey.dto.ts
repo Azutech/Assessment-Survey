@@ -2,8 +2,6 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 
-
-
 const ImagesSchema = z.object({
   shopExteriorImage: z.string().url('Invalid exterior image URL'),
   shopInteriorImage1: z.string().url().optional().nullable(),
@@ -40,9 +38,7 @@ const CreateSurveySchema = z
       '46-55',
       'Above 55',
     ]),
-    numberOfEmployees: z.coerce
-      .string()
-      .min(0, 'Must be 0 or more'),
+    numberOfEmployees: z.coerce.string().min(0, 'Must be 0 or more'),
     shopStatus: z.enum(['occupied', 'unoccupied', 'locked up']).optional(),
 
     // Step 2: Location
@@ -95,14 +91,13 @@ const CreateSurveySchema = z
 
     // Step 5: Commercial & Consent
     willingnessToPay: z.string().trim(),
-    paymentPreference: z
-      .enum([
-        'prepaid-card',
-        'monthly-subscription',
-        'bank-transfer',
-        'mobile-money',
-        'pay-as-you-go',
-      ]),
+    paymentPreference: z.enum([
+      'prepaid-card',
+      'monthly-subscription',
+      'bank-transfer',
+      'mobile-money',
+      'pay-as-you-go',
+    ]),
     applianceUsed: z
       .enum(['Light', 'Medium sized', 'Heavy appliances'])
       .optional(),
