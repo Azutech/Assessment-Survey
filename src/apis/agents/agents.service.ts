@@ -13,7 +13,10 @@ import { JwtService } from 'src/guards/jwt/jwt.service';
 
 @Injectable()
 export class AgentsService {
-  constructor(private readonly agentRepository: AgentRepository, private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly agentRepository: AgentRepository,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async addAgent(createAgentDto: CreateAgentDto) {
     const sanitizedDto = trimObjectStrings(createAgentDto);
@@ -69,44 +72,34 @@ export class AgentsService {
     return this.agentRepository.create(newUser);
   }
 
-    async validateAgent(loginDto: LoginDto) {
+  async validateAgent(loginDto: LoginDto) {
+    const { email, password } = loginDto;
 
-      const { email, password } = loginDto;
+    let modEmail = email.trim().toLowerCase();
 
-      let modEmail = email.trim().toLowerCase();
+    let theUser = await this.agentRepository.findOne({ email: modEmail });
+    if (!theUser?.email) {
+      throw new NotFoundException('User not found');
+    }
 
-      let theUser = await this.agentRepository.findOne({ email: modEmail });
-      if (!theUser?.email) {
+    if (theUser?.status !== AgentStatus.ACTIVE) {
+      throw new BadRequestException('User is not active');
+    }
 
-        throw new NotFoundException('User not found')
-   
-      }
+    const validPassword = compareSync(password, theUser?.password);
+    if (!validPassword) {
+      throw new BadRequestException('Invalid Password');
+    }
 
-      if (theUser?.status !== AgentStatus.ACTIVE) {
+    const authTokenParam = {
+      userId: theUser?._id,
+      userType: theUser?.userType,
+    };
 
-                throw new BadRequestException('User is not active')
-
-    
-      }
-
-      const validPassword = compareSync(password, theUser?.password);
-      if (!validPassword) {
-
-                        throw new BadRequestException('Invalid Password')
-
-      
-      }
-
-      const authTokenParam = {
-        userId: theUser?._id,
-        userType: theUser?.userType,
-      };
-
-      return {
-        auth: this.jwtService.createEncryptedToken(authTokenParam),
-        message: 'login successful \u2705',
-      };
-   
+    return {
+      auth: this.jwtService.createEncryptedToken(authTokenParam),
+      message: 'login successful \u2705',
+    };
   }
 
   async viewAgent(id: string) {

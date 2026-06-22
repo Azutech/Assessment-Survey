@@ -66,6 +66,4 @@ const loginAdminSchema = z.object({
       'Password must contain at least one special character',
     ),
 });
-export class LoginAdminDto extends createZodDto(loginAdminSchema) {
-
-}
+export class LoginAdminDto extends createZodDto(loginAdminSchema) {}

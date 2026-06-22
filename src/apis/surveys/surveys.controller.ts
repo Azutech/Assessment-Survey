@@ -23,11 +23,9 @@ export class SurveysController {
     @Body() createSurveyDto: CreateSurveyDto,
     @Res() res: Response,
   ) {
-    createSurveyDto.userId = req.user.userId
+    createSurveyDto.userId = req.user.userId;
     const survey = await this.surveysService.addAgentSurvey(createSurveyDto);
-    return res.status(HttpStatus.CREATED).json({
-      
-    })
+    return res.status(HttpStatus.CREATED).json({});
   }
 
   // @Get()
