@@ -36,7 +36,7 @@ export class AdminController {
     return res.status(HttpStatus.OK).json(result);
   }
 
-  @UseGuards(JwtAuthGuard, AdminOnlyGuard )
+  @UseGuards(JwtAuthGuard, AdminOnlyGuard)
   @Put('activateAgent')
   async activateAgent(@Res() res: Response, @Query('userId') userId: string) {
     const result = await this.adminsService.activateAgent(userId);

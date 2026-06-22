@@ -112,7 +112,20 @@ export class SurveysService {
     return newCustomer;
   }
 
-  async setStatusAndComments(statusUpdateDto: StatusUpdateDto,  surveyId: string) {
+  async viewSurvey(id: string) {
+    const customer = await this.surveyRepository.findOne({ _id: id });
+
+    if (!customer) {
+      throw new NotFoundException('Survey not Found');
+    }
+
+    return customer;
+  }
+
+  async setStatusAndComments(
+    statusUpdateDto: StatusUpdateDto,
+    surveyId: string,
+  ) {
     const { status, comment, userId } = statusUpdateDto;
 
     const admin = await this.adminRepository.findOne({ _id: userId });

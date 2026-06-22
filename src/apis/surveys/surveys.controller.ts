@@ -36,7 +36,7 @@ export class SurveysController {
       .json({ message: 'survey added', survey });
   }
 
-   @UseGuards(JwtAuthGuard, AdminOnlyGuard)
+  @UseGuards(JwtAuthGuard, AdminOnlyGuard)
   @Put('updateSurveyStatus')
   async updateSurveyStatus(
     @Req() req: any,
@@ -44,16 +44,26 @@ export class SurveysController {
     @Body() statusUpdateDto: StatusUpdateDto,
     @Query('surveyId') surveyId: string,
   ) {
-   const payload = {
-    ...statusUpdateDto,
-    surveyId,
-    userId: req.user.userId,
-  };
+    const payload = {
+      ...statusUpdateDto,
+      surveyId,
+      userId: req.user.userId,
+    };
 
-    const result =
-      await this.surveysService.setStatusAndComments(payload, surveyId);
+    const result = await this.surveysService.setStatusAndComments(
+      payload,
+      surveyId,
+    );
     return res
       .status(HttpStatus.OK)
-      .json({message: 'Customer status updated successfully',  result});
+      .json({ message: 'Customer status updated successfully', result });
+  }
+
+  @Get('viewSurvey')
+  async findOne(@Res() res: Response, @Query('surveyId') id: string) {
+    const survey = await this.surveysService.viewSurvey(id);
+    return res
+      .status(HttpStatus.OK)
+      .json({ msg: 'Customer retrieved successfully', survey });
   }
 }

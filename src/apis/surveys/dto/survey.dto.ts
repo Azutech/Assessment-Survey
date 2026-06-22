@@ -159,5 +159,5 @@ const statusSurveySchema = z.object({
 });
 
 export class StatusUpdateDto extends createZodDto(statusSurveySchema) {
-    userId: string
+  userId: string;
 }
