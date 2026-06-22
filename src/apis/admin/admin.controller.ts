@@ -17,6 +17,7 @@ import { AdminService } from './admin.service';
 import { CreateAdminDto, LoginAdminDto } from './dto/admin.dto';
 import { Response } from 'express';
 import { JwtAuthGuard } from 'src/guards/jwt/jwt.guard';
+import { AdminOnlyGuard } from 'src/guards/admin.guard';
 // import { AdminOnlyGuard } from 'src/guards/admin.guard';
 
 @Controller('admin')
@@ -35,7 +36,7 @@ export class AdminController {
     return res.status(HttpStatus.OK).json(result);
   }
 
-  @UseGuards(JwtAuthGuard /* AdminOnlyGuard */)
+  @UseGuards(JwtAuthGuard, AdminOnlyGuard)
   @Put('activateAgent')
   async activateAgent(@Res() res: Response, @Query('userId') userId: string) {
     const result = await this.adminsService.activateAgent(userId);

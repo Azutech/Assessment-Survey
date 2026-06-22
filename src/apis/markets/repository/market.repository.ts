@@ -25,6 +25,7 @@ export class MarketRepository {
           powerSource: dto.powerSource,
           gridInfrastructure: dto.gridInfrastructure,
           marketDescription: dto.marketDescription,
+          LGA_Eligibility: dto.LGA_Eligibility,
         },
       },
       {

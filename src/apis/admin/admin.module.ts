@@ -19,4 +19,4 @@ import { Agent, agentSchema } from '../agents/entity/agent.entity';
   controllers: [AdminController],
   providers: [AdminService, AdminRepository, AgentRepository],
 })
-export class AdminsModule {}
+export class AdminModule {}

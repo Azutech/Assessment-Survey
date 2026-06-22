@@ -9,11 +9,14 @@ import {
   HttpStatus,
   Query,
   Search,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { AgentsService } from './agents.service';
-import { CreateAgentDto } from './dto/agent.dto';
+import { CreateAgentDto, LoginDto } from './dto/agent.dto';
 import { ZodValidationPipe } from 'node_modules/nestjs-zod/dist/index.cjs';
-import { Response } from 'express';
+import { Request, Response } from 'express';
+import { JwtAuthGuard } from 'src/guards/jwt/jwt.guard';
 
 @Controller('agents')
 export class AgentsController {
@@ -30,13 +33,23 @@ export class AgentsController {
       .status(HttpStatus.CREATED)
       .json({ msg: 'Agent created successfully', agent });
   }
+  @Post('login')
+  @UsePipes(new ZodValidationPipe())
+  async validateAgent(@Body() createAgentDto: LoginDto, @Res() res: Response) {
+    const agent = await this.agentsService.validateAgent(createAgentDto);
+    return res
+      .status(HttpStatus.CREATED)
+      .json({ msg: 'Agent created successfully', agent });
+  }
 
+  @UseGuards(JwtAuthGuard)
   @Get('agentDashbord')
   async viewDashboard(
-    @Query('id') id: string,
+    @Req() req: any,
     @Res() res: Response,
   ): Promise<Response> {
-    const agent = await this.agentsService.agentDashboard(id);
+    const userId = req.user.userId;
+    const agent = await this.agentsService.agentDashboard(userId);
     return res
       .status(HttpStatus.OK)
       .json({ msg: 'Agent Dashboard returned', agent });

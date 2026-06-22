@@ -43,3 +43,30 @@ export class CreateAgentDto extends createZodDto(CreateAgentSchema) {
   uniqueId: string;
   avatar: string;
 }
+
+const loginSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .email('Invalid email address')
+    .refine(
+      (email) => {
+        const domain = email.split('@')[1]?.toLowerCase();
+        return !blockedDomains.includes(domain);
+      },
+      { message: 'Temporary email addresses are not allowed' },
+    ),
+
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters long')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/\d/, 'Password must contain at least one number')
+    .regex(
+      /[@$!%*?&.#^()_\-+=]/,
+      'Password must contain at least one special character',
+    ),
+});
+export class LoginDto extends createZodDto(loginSchema) {}

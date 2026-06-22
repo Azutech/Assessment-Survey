@@ -10,6 +10,7 @@ export const marketsSeed = [
     marketBuildingsType: 'Mixed (open stalls + lock-up shops)',
     powerSource: 'PHCN + generators',
     gridInfrastructure: 'Moderate (dense informal wiring, shared meters)',
+    LGA_Eligibility: true,
     marketDescription:
       'Large wholesale and retail market with dense trading activity across textiles, fashion accessories, and general goods within a mixed open and lock-up shop structure.',
   },
@@ -23,6 +24,7 @@ export const marketsSeed = [
     marketBuildingsType: 'Modern structured mall-style stalls',
     powerSource: 'PHCN + backup generators',
     gridInfrastructure: 'Organized internal wiring system',
+    LGA_Eligibility: true,
     marketDescription:
       'Organized modern market complex with structured retail units primarily focused on fashion, fabrics, and consumer goods.',
   },
@@ -36,6 +38,7 @@ export const marketsSeed = [
     marketBuildingsType: 'Open-air market stalls',
     powerSource: 'Generators (primary) + limited PHCN',
     gridInfrastructure: 'Weak (temporary wiring, high load sharing)',
+    LGA_Eligibility: false,
     marketDescription:
       'High-volume open-air food distribution market focused on perishable goods such as fruits, vegetables, and agricultural produce.',
   },
@@ -49,6 +52,7 @@ export const marketsSeed = [
     marketBuildingsType: 'Mixed (open + semi-structured shops)',
     powerSource: 'PHCN + generators',
     gridInfrastructure: 'Moderate (old wiring system)',
+    LGA_Eligibility: true,
     marketDescription:
       'Central urban market serving both retail and wholesale buyers with a mix of foodstuff and household goods.',
   },
@@ -62,6 +66,7 @@ export const marketsSeed = [
     marketBuildingsType: 'Structured lock-up shops + open sections',
     powerSource: 'PHCN + generators',
     gridInfrastructure: 'Relatively stable (commercial grid access)',
+    LGA_Eligibility: true,
     marketDescription:
       'Urban retail market serving surrounding residential and commercial districts with mixed consumer goods and services.',
   },
@@ -75,6 +80,7 @@ export const marketsSeed = [
     marketBuildingsType: 'Dense lock-up shops + warehouses',
     powerSource: 'Heavy generator dependency',
     gridInfrastructure: 'High-load informal wiring system',
+    LGA_Eligibility: true,
     marketDescription:
       'Major electronics and wholesale market specializing in electronics, appliances, and imported goods with large trading warehouses.',
   },
@@ -88,6 +94,7 @@ export const marketsSeed = [
     marketBuildingsType: 'High-density lock-up shops',
     powerSource: 'PHCN + generators',
     gridInfrastructure: 'Moderate (commercial grid, overloaded)',
+    LGA_Eligibility: true,
     marketDescription:
       'Technology and electronics trading hub focused on mobile devices, computers, accessories, and repair services.',
   },
@@ -101,6 +108,7 @@ export const marketsSeed = [
     marketBuildingsType: 'High-density lock-up shops + street stalls',
     powerSource: 'Generators (dominant)',
     gridInfrastructure: 'Weak (aged and overloaded wiring)',
+    LGA_Eligibility: true,
     marketDescription:
       'Dense commercial trading area with strong focus on fashion, textiles, and wholesale distribution within crowded urban structures.',
   },
@@ -114,6 +122,7 @@ export const marketsSeed = [
     marketBuildingsType: 'Open stalls + transport-side kiosks',
     powerSource: 'Generators + limited PHCN',
     gridInfrastructure: 'Poor to moderate (unstable supply)',
+    LGA_Eligibility: false,
     marketDescription:
       'High-traffic commercial and transport-linked market offering fast-moving consumer goods and informal retail services.',
   },
@@ -127,6 +136,7 @@ export const marketsSeed = [
     marketBuildingsType: 'Open yards + warehouses',
     powerSource: 'Generators (primary)',
     gridInfrastructure: 'Low (industrial informal wiring)',
+    LGA_Eligibility: true,
     marketDescription:
       'Automotive spare parts and mechanical goods market serving vehicle repair and maintenance businesses.',
   },
@@ -142,6 +152,7 @@ export const marketsSeed = [
     marketBuildingsType: 'Open stalls + small lock-ups',
     powerSource: 'PHCN + generators',
     gridInfrastructure: 'Moderate',
+    LGA_Eligibility: true,
     marketDescription:
       'Local mixed retail market serving foodstuff, household goods, and small-scale trading activities.',
   },
@@ -155,6 +166,7 @@ export const marketsSeed = [
     marketBuildingsType: 'Open-air stalls',
     powerSource: 'Mostly generators',
     gridInfrastructure: 'Weak',
+    LGA_Eligibility: true,
     marketDescription:
       'Traditional open market primarily focused on daily foodstuffs and small retail trading.',
   },
@@ -168,6 +180,7 @@ export const marketsSeed = [
     marketBuildingsType: 'Mixed (open + semi-structured)',
     powerSource: 'PHCN + generators',
     gridInfrastructure: 'Moderate',
+    LGA_Eligibility: true,
     marketDescription:
       'Regional commercial market supporting local trade in foodstuff, clothing, and household goods.',
   },
@@ -181,6 +194,7 @@ export const marketsSeed = [
     marketBuildingsType: 'Open stalls + lock-ups',
     powerSource: 'PHCN + generators',
     gridInfrastructure: 'Moderate',
+    LGA_Eligibility: true,
     marketDescription:
       'Central town market serving agricultural produce, food items, and general merchandise.',
   },
@@ -194,6 +208,7 @@ export const marketsSeed = [
     marketBuildingsType: 'Open market + roadside shops',
     powerSource: 'Generators (primary)',
     gridInfrastructure: 'Weak',
+    LGA_Eligibility: true,
     marketDescription:
       'Busy roadside market serving commuters and residents with foodstuff and daily consumer goods.',
   },
@@ -209,6 +224,7 @@ export const marketsSeed = [
     marketBuildingsType: 'Open stalls + structured sections',
     powerSource: 'PHCN + generators',
     gridInfrastructure: 'Moderate',
+    LGA_Eligibility: true,
     marketDescription:
       'Major food distribution market supplying grains, meat, and household food items within Ibadan.',
   },
@@ -222,6 +238,7 @@ export const marketsSeed = [
     marketBuildingsType: 'Structured commercial buildings',
     powerSource: 'PHCN + generators',
     gridInfrastructure: 'Relatively stable',
+    LGA_Eligibility: true,
     marketDescription:
       'Central business and retail district with structured shops offering fashion, banking access, and services.',
   },
@@ -235,6 +252,7 @@ export const marketsSeed = [
     marketBuildingsType: 'Large open market stalls',
     powerSource: 'Generators (primary)',
     gridInfrastructure: 'Weak',
+    LGA_Eligibility: false,
     marketDescription:
       'Large open trading market focused on clothing, textiles, and general consumer goods.',
   },
@@ -248,6 +266,7 @@ export const marketsSeed = [
     marketBuildingsType: 'Traditional open market',
     powerSource: 'PHCN + generators',
     gridInfrastructure: 'Moderate',
+    LGA_Eligibility: true,
     marketDescription:
       'Traditional market serving foodstuff and everyday household trading activities.',
   },
@@ -261,6 +280,7 @@ export const marketsSeed = [
     marketBuildingsType: 'Open stalls',
     powerSource: 'Mostly generators',
     gridInfrastructure: 'Weak',
+    LGA_Eligibility: false,
     marketDescription:
       'Local town market serving daily food and essential household goods.',
   },
