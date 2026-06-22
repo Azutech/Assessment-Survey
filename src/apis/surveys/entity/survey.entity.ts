@@ -4,6 +4,7 @@ import { startOfSecond } from 'date-fns';
 import { Images } from '../interfaces/survey.interface';
 
 const ApplianceSchema = raw({
+  _id: false,
   name: String,
   quantity: Number,
   hoursPerDay: Number,

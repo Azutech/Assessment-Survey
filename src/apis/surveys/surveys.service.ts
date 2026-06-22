@@ -34,10 +34,10 @@ export class SurveysService {
       phoneNumber,
       GPS,
       businessType,
-      shopStatus,
-      consent,
-      marketState,
-      marketEntity,
+      // shopStatus,
+      // consent,
+      // marketState,
+      appliances,
       images,
     } = surveyDto;
 
@@ -68,7 +68,9 @@ export class SurveysService {
       images && typeof images === 'object' && Object.keys(images).length > 0;
 
     const resolvedAddress = await this.getAddressFromGPS(GPS);
-    const appliances = this.processAppliances(surveyDto.appliances);
+    const checkappliances = this.processAppliances(surveyDto.appliances);
+
+    console.log("new appliances",appliances, checkappliances)
 
     const start = new Date(startTime).getTime();
     const end = new Date(endTime).getTime();
