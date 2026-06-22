@@ -42,7 +42,7 @@ export class SurveysService {
     } = surveyDto;
 
     const [findMarket, agent, findPhoneNumber] = await Promise.all([
-      this.marketRepository.findOne({ marketName: marketName.trim() }),
+      this.marketRepository.findOne({ marketName: marketName }),
 
       this.agentRepository.findOne({ _id: surveyDto.userId }),
 
@@ -53,12 +53,12 @@ export class SurveysService {
 
     if (findPhoneNumber) {
       throw new ConflictException(
-        `This Phone Number ${phoneNumber} is already in use.`,
+        `This Phone Number  is already in use.`,
       );
     }
 
     if (!findMarket) {
-      throw new BadRequestException(`Market ${findMarket} not found.`);
+      throw new BadRequestException(`Market not found.`);
     }
     if (!agent) {
       throw new BadRequestException(`Agent not found.`);
