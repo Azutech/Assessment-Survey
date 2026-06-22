@@ -8,16 +8,19 @@ import {
   Req,
   Res,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { SurveysService } from './surveys.service';
 import { CreateSurveyDto } from './dto/survey.dto';
 import { Response } from 'express';
+import { JwtAuthGuard } from 'src/guards/jwt/jwt.guard';
 
 @Controller('surveys')
 export class SurveysController {
   constructor(private readonly surveysService: SurveysService) {}
 
-  @Post()
+  @UseGuards(JwtAuthGuard)
+  @Post('addSurvey')
   async create(
     @Req() req: any,
     @Body() createSurveyDto: CreateSurveyDto,
@@ -25,7 +28,7 @@ export class SurveysController {
   ) {
     createSurveyDto.userId = req.user.userId;
     const survey = await this.surveysService.addAgentSurvey(createSurveyDto);
-    return res.status(HttpStatus.CREATED).json({});
+    return res.status(HttpStatus.CREATED).json({message: "survey added", survey });
   }
 
   // @Get()

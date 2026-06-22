@@ -102,8 +102,8 @@ const CreateSurveySchema = z
       .enum(['Light', 'Medium sized', 'Heavy appliances'])
       .optional(),
     additionalComments: z.string().trim().optional(),
-    startTime: z.date().min(1, 'Start date is required'),
-    endTime: z.date().min(1, 'End date is required'),
+    startTime: z.string().min(1, 'Start date is required'),
+    endTime: z.string().min(1, 'End date is required'),
     consent: z
       .boolean()
       .refine((v) => v === true, { message: 'Consent is required to submit' }),
@@ -141,12 +141,10 @@ const CreateSurveySchema = z
 export class CreateSurveyDto extends createZodDto(CreateSurveySchema) {
   address: string;
   agentDetails: string;
-  endTime: Date;
   agentId: string;
   duration: string;
   LGA_Eligibility: boolean;
   category: string;
-  startTime: Date;
   marketState: string;
   marketEntity: string;
   shopSection: string;

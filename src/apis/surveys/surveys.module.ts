@@ -9,9 +9,11 @@ import { Survey, surveySchema } from './entity/survey.entity';
 import { Market, MarketSchema } from '../markets/entity/market.entity';
 import { Agent, agentSchema } from '../agents/entity/agent.entity';
 import { AgentRepository } from '../agents/repository/agent.repository';
+import { CustomJwtModule } from 'src/guards/jwt/jwt.module';
 
 @Module({
   imports: [
+    CustomJwtModule,
     HttpModule,
     MongooseModule.forFeature([
       { name: Market.name, schema: MarketSchema },
