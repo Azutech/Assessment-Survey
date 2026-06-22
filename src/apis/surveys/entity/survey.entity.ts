@@ -11,13 +11,10 @@ const ApplianceSchema = raw({
   totalConsumption: Number,
 });
 
-
-
 export type SurveyDocument = Survey & Document;
 
-
 export class Survey {
-      @Prop({ type: String, required: false })
+  @Prop({ type: String, required: false })
   marketName: string;
 
   @Prop({ type: String, required: false })

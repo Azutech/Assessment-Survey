@@ -1,4 +1,4 @@
-export interface CustomerI {
+export interface SurveyI {
   marketName: string;
   marketLGA: string;
   marketState: string;
