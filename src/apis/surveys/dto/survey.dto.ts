@@ -153,7 +153,6 @@ export class CreateSurveyDto extends createZodDto(CreateSurveySchema) {
 }
 
 const statusSurveySchema = z.object({
-  // Step 1: Identity
   status: z.string().trim().min(1, 'Status is required'),
   comment: z.string().optional(),
 });
