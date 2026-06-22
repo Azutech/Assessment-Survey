@@ -70,8 +70,6 @@ export class SurveysService {
     const resolvedAddress = await this.getAddressFromGPS(GPS);
     const checkappliances = this.processAppliances(surveyDto.appliances);
 
-    console.log("new appliances",appliances, checkappliances)
-
     const start = new Date(startTime).getTime();
     const end = new Date(endTime).getTime();
 
@@ -79,7 +77,6 @@ export class SurveysService {
       throw new BadRequestException('endTime cannot be before startTime');
     }
     const surveyDuration = this.calculateSurveyDuration(startTime, endTime);
-
 
     const newCustomer = await this.surveyRepository.create({
       ...surveyDto,
@@ -96,7 +93,7 @@ export class SurveysService {
       endTime: new Date(endTime),
       address: resolvedAddress || undefined,
       category: 'agent',
-      appliances,
+      appliances: this.calculateApplianceConsumption(appliances),
       shopSection,
     });
 
@@ -215,4 +212,16 @@ export class SurveysService {
       })
       .filter(Boolean);
   }
+
+  private calculateApplianceConsumption(appliances: any[] = []) {
+  return appliances.map((appliance) => {
+    const quantity = Number(appliance.quantity || 0);
+    const watts = Number(appliance.watts || 0);
+
+    return {
+      ...appliance,
+      totalConsumption: watts * quantity,
+    };
+  });
+}
 }
