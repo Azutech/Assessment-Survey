@@ -87,11 +87,11 @@ export class SurveysController {
     @Query('currentEnergySource') currentEnergySource?: string,
     @Query('LGA_Eligibility', OptionalBoolPipe) LGA_Eligibility?: boolean,
     @Query('hasPictures', OptionalBoolPipe) hasPictures?: boolean,
-    @Query('status') status?: string | string[], // 🔥 added
-    @Query('gpsFilter') gpsFilter?: 'withGPS' | 'withoutGPS', // 🔥 NEW
-    @Query('dateRange') dateRange?: string, // 🔥 NEW
-    @Query('date') date?: string, // 🔥 NEW
-    @Query('marketEntity') marketEntity?: string, // 🔥 NE  W
+    @Query('status') status?: string | string[], 
+    @Query('gpsFilter') gpsFilter?: 'withGPS' | 'withoutGPS', 
+    @Query('dateRange') dateRange?: string, 
+    @Query('date') date?: string, 
+    @Query('marketEntity') marketEntity?: string, 
   ) {
     const customers = await this.surveysService.viewAllCustomers(
       search,
