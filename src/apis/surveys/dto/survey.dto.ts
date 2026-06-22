@@ -50,8 +50,8 @@ const CreateSurveySchema = z
       .trim()
       .min(1, 'GPS is required — please enable location access')
       .regex(/^-?\d+(\.\d+)? -?\d+(\.\d+)?$/, 'GPS must be in format: lat lng'),
-    shopSection: z.string().trim().optional(),
-    shopSectionNumber: z.string().trim().optional(),
+    // shopSection: z.string().trim().optional(),
+    // shopSectionNumber: z.string().trim().optional(),
     shopBlock: z.string().trim().optional(),
     shopNumber: z.string().trim().optional(),
 
@@ -106,6 +106,8 @@ const CreateSurveySchema = z
       .enum(['Light', 'Medium sized', 'Heavy appliances'])
       .optional(),
     additionalComments: z.string().trim().optional(),
+    startTime: z.date().min(1, "Start date is required"),
+    endTime: z.date().min(1, "End date is required"),
     consent: z
       .boolean()
       .refine((v) => v === true, { message: 'Consent is required to submit' }),
@@ -117,7 +119,6 @@ const CreateSurveySchema = z
       .min(1, 'Signature is required')
       .regex(/^data:image\/(png|jpeg);base64,/, 'Invalid signature format'),
     images: ImagesSchema,
-
   })
   .superRefine((data, ctx) => {
     const isGenerator = ['petrol-generator', 'diesel-generator'].includes(
@@ -148,6 +149,10 @@ export class CreateSurveyDto extends createZodDto(CreateSurveySchema) {
   agentId: string;
   duration: string;
   LGA_Eligibility: boolean;
-  category:string;
-  startTime:Date
+  category: string;
+  startTime: Date;
+  marketState: string;
+  marketEntity: string;
+  shopSection: string;
+  shopSectionNumber: string
 }
