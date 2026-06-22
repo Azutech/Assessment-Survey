@@ -5,19 +5,30 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
+  Req,
+  Res,
+  HttpStatus,
 } from '@nestjs/common';
 import { SurveysService } from './surveys.service';
 import { CreateSurveyDto } from './dto/survey.dto';
+import { Response } from 'express';
 
 @Controller('surveys')
 export class SurveysController {
   constructor(private readonly surveysService: SurveysService) {}
 
-  // @Post()
-  // create(@Body() createSurveyDto: CreateSurveyDto) {
-  //   return this.surveysService.create(createSurveyDto);
-  // }
+  @Post()
+  async create(
+    @Req() req: any,
+    @Body() createSurveyDto: CreateSurveyDto,
+    @Res() res: Response,
+  ) {
+    createSurveyDto.userId = req.user.userId
+    const survey = await this.surveysService.addAgentSurvey(createSurveyDto);
+    return res.status(HttpStatus.CREATED).json({
+      
+    })
+  }
 
   // @Get()
   // findAll() {

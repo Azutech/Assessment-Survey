@@ -91,6 +91,18 @@ export class SurveysService {
       appliances,
       shopSection,
     });
+
+
+       // Update agent's last activity
+      await this.agentRepository.updateinfo(
+        { _id: surveyDto.userId },
+        {
+          lastActiveTime: new Date(),
+          lastLocation: newCustomer.GPS,
+        },
+      );
+
+      return newCustomer;
   }
 
   private async getAddressFromGPS(gps: string): Promise<string | null> {

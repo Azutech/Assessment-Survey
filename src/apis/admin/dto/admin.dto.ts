@@ -67,5 +67,5 @@ const loginAdminSchema = z.object({
     ),
 });
 export class LoginAdminDto extends createZodDto(loginAdminSchema) {
-  avatar: string;
+
 }
