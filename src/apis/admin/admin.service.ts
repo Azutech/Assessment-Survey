@@ -8,7 +8,7 @@ import {
 import { CreateAdminDto, LoginAdminDto } from './dto/admin.dto';
 import { AdminRepository } from './repository/admin.repository';
 import { compareSync, genSaltSync, hashSync } from 'bcrypt';
-// import { JwtService } from 'src/guards/jwt/jwt.service';
+import { JwtService } from 'src/guards/jwt/jwt.service';
 import { AgentRepository } from '../agents/repository/agent.repository';
 import { AgentStatus } from '../agents/utils/enum/util.enum';
 
@@ -16,7 +16,7 @@ import { AgentStatus } from '../agents/utils/enum/util.enum';
 export class AdminService {
   constructor(
     private readonly adminRepository: AdminRepository,
-    // private readonly jwtService: JwtService,
+    private readonly jwtService: JwtService,
     private readonly agentRepository: AgentRepository,
   ) {}
   async create(createAdminDto: CreateAdminDto) {
@@ -68,7 +68,7 @@ export class AdminService {
     };
 
     return {
-      // auth: this.jwtService.createEncryptedToken(authTokenParam),
+      auth: this.jwtService.createEncryptedToken(authTokenParam),
       message: 'login successful \u2705',
     };
   }

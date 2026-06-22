@@ -9,11 +9,14 @@ import {
   Res,
   HttpStatus,
   UseGuards,
+  Query,
+  Put,
 } from '@nestjs/common';
 import { SurveysService } from './surveys.service';
-import { CreateSurveyDto } from './dto/survey.dto';
+import { CreateSurveyDto, StatusUpdateDto } from './dto/survey.dto';
 import { Response } from 'express';
 import { JwtAuthGuard } from 'src/guards/jwt/jwt.guard';
+import { AdminOnlyGuard } from 'src/guards/admin.guard';
 
 @Controller('surveys')
 export class SurveysController {
@@ -33,8 +36,24 @@ export class SurveysController {
       .json({ message: 'survey added', survey });
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.surveysService.findAll();
-  // }
+   @UseGuards(JwtAuthGuard, AdminOnlyGuard)
+  @Put('updateSurveyStatus')
+  async updateSurveyStatus(
+    @Req() req: any,
+    @Res() res: Response,
+    @Body() statusUpdateDto: StatusUpdateDto,
+    @Query('surveyId') surveyId: string,
+  ) {
+   const payload = {
+    ...statusUpdateDto,
+    surveyId,
+    userId: req.user.userId,
+  };
+
+    const result =
+      await this.surveysService.setStatusAndComments(payload, surveyId);
+    return res
+      .status(HttpStatus.OK)
+      .json({message: 'Customer status updated successfully',  result});
+  }
 }

@@ -154,10 +154,10 @@ export class CreateSurveyDto extends createZodDto(CreateSurveySchema) {
 
 const statusSurveySchema = z.object({
   // Step 1: Identity
-  surveyId: z.string().trim().min(1, 'Customer Id  is required'),
   status: z.string().trim().min(1, 'Status is required'),
   comment: z.string().optional(),
-  userId: z.string().trim().min(1, 'User Id name is required'),
 });
 
-export class StatusUpdateDto extends createZodDto(statusSurveySchema) {}
+export class StatusUpdateDto extends createZodDto(statusSurveySchema) {
+    userId: string
+}

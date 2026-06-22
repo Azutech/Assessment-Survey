@@ -112,8 +112,8 @@ export class SurveysService {
     return newCustomer;
   }
 
-  async setStatusAndComments(statusUpdateDto: StatusUpdateDto) {
-    const { surveyId, status, comment, userId } = statusUpdateDto;
+  async setStatusAndComments(statusUpdateDto: StatusUpdateDto,  surveyId: string) {
+    const { status, comment, userId } = statusUpdateDto;
 
     const admin = await this.adminRepository.findOne({ _id: userId });
     if (!admin) {
