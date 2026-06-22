@@ -72,9 +72,7 @@ export class SurveysController {
       .json({ msg: 'Customer retrieved successfully', survey });
   }
 
-
-
-    @Get('viewAllCustomer')
+  @Get('viewAllCustomer')
   async findAll(
     @Res() res: Response,
     @Query('search') search?: string,
@@ -87,11 +85,11 @@ export class SurveysController {
     @Query('currentEnergySource') currentEnergySource?: string,
     @Query('LGA_Eligibility', OptionalBoolPipe) LGA_Eligibility?: boolean,
     @Query('hasPictures', OptionalBoolPipe) hasPictures?: boolean,
-    @Query('status') status?: string | string[], 
-    @Query('gpsFilter') gpsFilter?: 'withGPS' | 'withoutGPS', 
-    @Query('dateRange') dateRange?: string, 
-    @Query('date') date?: string, 
-    @Query('marketEntity') marketEntity?: string, 
+    @Query('status') status?: string | string[],
+    @Query('gpsFilter') gpsFilter?: 'withGPS' | 'withoutGPS',
+    @Query('dateRange') dateRange?: string,
+    @Query('date') date?: string,
+    @Query('marketEntity') marketEntity?: string,
   ) {
     const customers = await this.surveysService.viewAllCustomers(
       search,
@@ -112,6 +110,33 @@ export class SurveysController {
 
     return res
       .status(HttpStatus.OK)
-      .json({msg: 'Customers retrieved successfully', customers});
+      .json({ msg: 'Customers retrieved successfully', customers });
+  }
+
+  @Get('exportCustomersCsv')
+  async exportCustomersCsv(
+    @Res() res: Response,
+    @Query('agentId') agentId: string,
+    @Query('marketName') marketName: string,
+    @Query('marketLGA') marketLGA: string,
+    @Query('marketEntity') marketEntity: string,
+    @Query('customerName') customerName?: string,
+     @Query('LGA_Eligibility', OptionalBoolPipe) LGA_Eligibility?: boolean,
+    @Query('hasPictures', OptionalBoolPipe) hasPictures?: boolean,
+  ) {
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="survey.csv"');
+
+    const stream = await this.surveysService.buildCsvStream({
+      agentId,
+      marketName,
+      marketLGA,
+      marketEntity,
+      customerName,
+      LGA_Eligibility,
+      hasPictures,
+    });
+
+    stream.pipe(res);
   }
 }

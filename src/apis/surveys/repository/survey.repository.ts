@@ -277,9 +277,7 @@ export class SurveyRepository {
     }
   }
 
-
-
-    async findAllCustomerExport(
+  async findAllCustomerExport(
     where: PropDataInput = {},
     agentId?: string,
     marketName?: string,

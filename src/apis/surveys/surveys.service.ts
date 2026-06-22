@@ -5,7 +5,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-  import { stringify } from 'csv-stringify';
+import { stringify } from 'csv-stringify';
 
 import { CreateSurveyDto, StatusUpdateDto } from './dto/survey.dto';
 import { HttpService } from '@nestjs/axios';
@@ -279,135 +279,112 @@ export class SurveysService {
     }
   }
 
+  // async exportCustomersToCsvStream(
+  //   res: Response,
+  //   agentId: string,
+  //   marketName: string,
+  //   marketLGA: string,
+  //   marketEntity: string,
+  //   customerName?: string,
+  //   LGA_Eligibility?: boolean,
+  //   hasPictures?: boolean,
+  // ) {
+  //   const BATCH_SIZE = 1000;
+  //   const UNAPPROVED_COORDINATES = '6.4474 3.3903';
 
+  //   let page = 1;
+  //   let hasMore = true;
 
+  //   res.setHeader('Content-Type', 'text/csv');
+  //   res.setHeader(
+  //     'Content-Disposition',
+  //     'attachment; filename="customers.csv"',
+  //   );
 
-// async exportCustomersToCsvStream(
-//   res: Response,
-//   agentId: string,
-//   marketName: string,
-//   marketLGA: string,
-//   marketEntity: string,
-//   customerName?: string,
-//   LGA_Eligibility?: boolean,
-//   hasPictures?: boolean,
-// ) {
-//   const BATCH_SIZE = 1000;
-//   const UNAPPROVED_COORDINATES = '6.4474 3.3903';
+  //   const stringifier = stringify({
+  //     header: true,
+  //   });
 
-//   let page = 1;
-//   let hasMore = true;
+  //   // pipe CSV → response
+  //   stringifier.pipe(res);
 
-//   res.setHeader('Content-Type', 'text/csv');
-//   res.setHeader(
-//     'Content-Disposition',
-//     'attachment; filename="customers.csv"',
-//   );
+  //   while (hasMore) {
+  //     const { data } =
+  //       await this.surveyRepository.findAllCustomerExport(
+  //         {},
+  //         agentId,
+  //         marketName,
+  //         marketEntity,
+  //         marketLGA,
+  //         customerName,
+  //         LGA_Eligibility,
+  //         hasPictures,
+  //         page,
+  //         BATCH_SIZE,
+  //       );
 
-//   const stringifier = stringify({
-//     header: true,
-//   });
+  //     if (!data || data.length === 0) {
+  //       hasMore = false;
+  //       break;
+  //     }
 
-//   // pipe CSV → response
-//   stringifier.pipe(res);
+  //     for (const biz of data) {
+  //       const row = {
+  //         TimeStamp: this.formatDateTime(biz.createdAt),
+  //         'GPS Location': biz.GPS ?? '-',
+  //         'GPS Address':
+  //           biz.GPS === UNAPPROVED_COORDINATES ? '-' : biz.address ?? '-',
+  //         'Market name': biz?.marketName ?? '-',
+  //         Section: biz.shopSectionNumber ?? '-',
+  //         LGA: biz?.marketLGA ?? '-',
+  //         Block: biz.shopBlock ?? '-',
+  //         'Market Entity': biz?.marketEntity ?? '-',
+  //         'Unique ID': biz?._id ?? '-',
+  //         'Shop Number': biz.shopNumber ?? '-',
+  //         'Shop Status': biz.shopStatus ?? '-',
+  //         'Shop Name': biz.businessName ?? '-',
+  //         Supervisor: biz.supervisorName ?? '-',
+  //         'BA Name': biz.agentDetails ?? '-',
+  //         'Shop-owner': biz.customerName ?? '-',
+  //         'Mobile number': biz.phoneNumber ?? '-',
+  //         Gender: biz.gender ?? '-',
+  //         'Age Range': biz.ageRange ?? '-',
+  //         'Shop Type': biz.businessType ?? '-',
+  //         Employees: biz.numberOfEmployees ?? '-',
+  //         'Generator Ownership': biz.generatorOwnership ? 'Yes' : 'No',
+  //         'Generator Size': biz.generatorSize ?? '-',
+  //         'Energy Source': biz.currentEnergySource ?? '-',
+  //         'Spend Range': biz.willingnessToPay ?? '-',
+  //         'Payment Mode': biz.paymentPreference ?? '-',
+  //         'Energy Challenges': biz.energyChallenges?.join(', ') ?? '-',
+  //         'Hours of Electricity': biz.electricitySupply ?? '-',
+  //         'Load profile (kW)': biz.loadProfile ?? '-',
+  //         'Estimated Future Load (kW)': biz.estimatedFutureLoad ?? '-',
+  //         ...this.flattenAppliances(biz.appliances ?? []),
+  //         'Appliances (Previous Format)': biz.applianceUsed ?? '-',
+  //         'Picture (Shop Exterior)': biz?.images?.shopExteriorImage || '-',
+  //         'Picture (Shop Interior 1)': biz?.images?.shopInteriorImage1 || '-',
+  //         'Picture (Shop Interior 2)': biz?.images?.shopInteriorImage2 || '-',
+  //         'Picture (Shop Interior 3)': biz?.images?.shopInteriorImage3 || '-',
+  //         Consent: 'Yes',
+  //         Signature: biz.signature ?? '-',
+  //         'Additional Comments': biz.additionalComments ?? '-',
+  //         Auditor: biz.auditor ?? '-',
+  //         Status: biz.status ?? '-',
+  //         Comment: biz.comment ?? '-',
+  //       };
 
-//   while (hasMore) {
-//     const { data } =
-//       await this.surveyRepository.findAllCustomerExport(
-//         {},
-//         agentId,
-//         marketName,
-//         marketEntity,
-//         marketLGA,
-//         customerName,
-//         LGA_Eligibility,
-//         hasPictures,
-//         page,
-//         BATCH_SIZE,
-//       );
+  //       stringifier.write(row);
+  //     }
 
-//     if (!data || data.length === 0) {
-//       hasMore = false;
-//       break;
-//     }
+  //     hasMore = data.length === BATCH_SIZE;
+  //     page++;
+  //   }
 
-//     for (const biz of data) {
-//       const row = {
-//         TimeStamp: this.formatDateTime(biz.createdAt),
-//         'GPS Location': biz.GPS ?? '-',
-//         'GPS Address':
-//           biz.GPS === UNAPPROVED_COORDINATES ? '-' : biz.address ?? '-',
-//         'Market name': biz?.marketName ?? '-',
-//         Section: biz.shopSectionNumber ?? '-',
-//         LGA: biz?.marketLGA ?? '-',
-//         Block: biz.shopBlock ?? '-',
-//         'Market Entity': biz?.marketEntity ?? '-',
-//         'Unique ID': biz?._id ?? '-',
-//         'Shop Number': biz.shopNumber ?? '-',
-//         'Shop Status': biz.shopStatus ?? '-',
-//         'Shop Name': biz.businessName ?? '-',
-//         Supervisor: biz.supervisorName ?? '-',
-//         'BA Name': biz.agentDetails ?? '-',
-//         'Shop-owner': biz.customerName ?? '-',
-//         'Mobile number': biz.phoneNumber ?? '-',
-//         Gender: biz.gender ?? '-',
-//         'Age Range': biz.ageRange ?? '-',
-//         'Shop Type': biz.businessType ?? '-',
-//         Employees: biz.numberOfEmployees ?? '-',
-//         'Generator Ownership': biz.generatorOwnership ? 'Yes' : 'No',
-//         'Generator Size': biz.generatorSize ?? '-',
-//         'Energy Source': biz.currentEnergySource ?? '-',
-//         'Spend Range': biz.willingnessToPay ?? '-',
-//         'Payment Mode': biz.paymentPreference ?? '-',
-//         'Energy Challenges': biz.energyChallenges?.join(', ') ?? '-',
-//         'Hours of Electricity': biz.electricitySupply ?? '-',
-//         'Load profile (kW)': biz.loadProfile ?? '-',
-//         'Estimated Future Load (kW)': biz.estimatedFutureLoad ?? '-',
-//         ...this.flattenAppliances(biz.appliances ?? []),
-//         'Appliances (Previous Format)': biz.applianceUsed ?? '-',
-//         'Picture (Shop Exterior)': biz?.images?.shopExteriorImage || '-',
-//         'Picture (Shop Interior 1)': biz?.images?.shopInteriorImage1 || '-',
-//         'Picture (Shop Interior 2)': biz?.images?.shopInteriorImage2 || '-',
-//         'Picture (Shop Interior 3)': biz?.images?.shopInteriorImage3 || '-',
-//         Consent: 'Yes',
-//         Signature: biz.signature ?? '-',
-//         'Additional Comments': biz.additionalComments ?? '-',
-//         Auditor: biz.auditor ?? '-',
-//         Status: biz.status ?? '-',
-//         Comment: biz.comment ?? '-',
-//       };
+  //   stringifier.end();
+  // }
 
-//       stringifier.write(row);
-//     }
-
-//     hasMore = data.length === BATCH_SIZE;
-//     page++;
-//   }
-
-//   stringifier.end();
-// }
-
-
-async buildCsvStream(filters: {
-  agentId: string;
-  marketName: string;
-  marketLGA: string;
-  marketEntity: string;
-  customerName?: string;
-  LGA_Eligibility?: boolean;
-  hasPictures?: boolean;
-}) {
-  const stringifier = stringify({ header: true });
-
-  this.streamCsvData(stringifier, filters);
-
-  return stringifier;
-}
-
-
-private async streamCsvData(
-  stringifier: any,
-  filters: {
+  async buildCsvStream(filters: {
     agentId: string;
     marketName: string;
     marketLGA: string;
@@ -415,17 +392,34 @@ private async streamCsvData(
     customerName?: string;
     LGA_Eligibility?: boolean;
     hasPictures?: boolean;
-  },
-) {
-  const BATCH_SIZE = 1000;
-  const UNAPPROVED_COORDINATES = '6.4474 3.3903';
+  }) {
+    const stringifier = stringify({ header: true });
 
-  let page = 1;
-  let hasMore = true;
+    this.streamCsvData(stringifier, filters);
 
-  while (hasMore) {
-    const { data } =
-      await this.surveyRepository.findAllCustomerExport(
+    return stringifier;
+  }
+
+  private async streamCsvData(
+    stringifier: any,
+    filters: {
+      agentId: string;
+      marketName: string;
+      marketLGA: string;
+      marketEntity: string;
+      customerName?: string;
+      LGA_Eligibility?: boolean;
+      hasPictures?: boolean;
+    },
+  ) {
+    const BATCH_SIZE = 1000;
+    const UNAPPROVED_COORDINATES = '6.4474 3.3903';
+
+    let page = 1;
+    let hasMore = true;
+
+    while (hasMore) {
+      const { data } = await this.surveyRepository.findAllCustomerExport(
         {},
         filters.agentId,
         filters.marketName,
@@ -438,66 +432,67 @@ private async streamCsvData(
         BATCH_SIZE,
       );
 
-    if (!data?.length) break;
+      if (!data?.length) break;
 
-    for (const biz of data) {
-      stringifier.write(this.mapCustomerToCsvRow(biz, UNAPPROVED_COORDINATES));
+      for (const biz of data) {
+        stringifier.write(
+          this.mapCustomerToCsvRow(biz, UNAPPROVED_COORDINATES),
+        );
+      }
+
+      hasMore = data.length === BATCH_SIZE;
+      page++;
     }
 
-    hasMore = data.length === BATCH_SIZE;
-    page++;
+    stringifier.end();
   }
 
-  stringifier.end();
-}
-
-
-private mapCustomerToCsvRow(biz: any, UNAPPROVED_COORDINATES: string) {
-  return {
-    TimeStamp: this.formatDateTime(biz.createdAt),
-    'GPS Location': biz.GPS ?? '-',
-    'GPS Address':
-      biz.GPS === UNAPPROVED_COORDINATES ? '-' : biz.address ?? '-',
-    'Market name': biz?.marketName ?? '-',
-    Section: biz.shopSectionNumber ?? '-',
-    LGA: biz?.marketLGA ?? '-',
-    Block: biz.shopBlock ?? '-',
-    'Market Entity': biz?.marketEntity ?? '-',
-    'Unique ID': biz?._id ?? '-',
-    'Shop Number': biz.shopNumber ?? '-',
-    'Shop Status': biz.shopStatus ?? '-',
-    'Shop Name': biz.businessName ?? '-',
-    Supervisor: biz.supervisorName ?? '-',
-    'BA Name': biz.agentDetails ?? '-',
-    'Shop-owner': biz.customerName ?? '-',
-    'Mobile number': biz.phoneNumber ?? '-',
-    Gender: biz.gender ?? '-',
-    'Age Range': biz.ageRange ?? '-',
-    'Shop Type': biz.businessType ?? '-',
-    Employees: biz.numberOfEmployees ?? '-',
-    'Generator Ownership': biz.generatorOwnership ? 'Yes' : 'No',
-    'Generator Size': biz.generatorSize ?? '-',
-    'Energy Source': biz.currentEnergySource ?? '-',
-    'Spend Range': biz.willingnessToPay ?? '-',
-    'Payment Mode': biz.paymentPreference ?? '-',
-    'Energy Challenges': biz.energyChallenges?.join(', ') ?? '-',
-    'Hours of Electricity': biz.electricitySupply ?? '-',
-    'Load profile (kW)': biz.loadProfile ?? '-',
-    'Estimated Future Load (kW)': biz.estimatedFutureLoad ?? '-',
-    ...this.flattenAppliances(biz.appliances ?? []),
-    'Appliances (Previous Format)': biz.applianceUsed ?? '-',
-    'Picture (Shop Exterior)': biz?.images?.shopExteriorImage || '-',
-    'Picture (Shop Interior 1)': biz?.images?.shopInteriorImage1 || '-',
-    'Picture (Shop Interior 2)': biz?.images?.shopInteriorImage2 || '-',
-    'Picture (Shop Interior 3)': biz?.images?.shopInteriorImage3 || '-',
-    Consent: 'Yes',
-    Signature: biz.signature ?? '-',
-    'Additional Comments': biz.additionalComments ?? '-',
-    Auditor: biz.auditor ?? '-',
-    Status: biz.status ?? '-',
-    Comment: biz.comment ?? '-',
-  };
-}
+  private mapCustomerToCsvRow(biz: any, UNAPPROVED_COORDINATES: string) {
+    return {
+      TimeStamp: this.formatDateTime(biz.createdAt),
+      'GPS Location': biz.GPS ?? '-',
+      'GPS Address':
+        biz.GPS === UNAPPROVED_COORDINATES ? '-' : (biz.address ?? '-'),
+      'Market name': biz?.marketName ?? '-',
+      Section: biz.shopSectionNumber ?? '-',
+      LGA: biz?.marketLGA ?? '-',
+      Block: biz.shopBlock ?? '-',
+      'Market Entity': biz?.marketEntity ?? '-',
+      'Unique ID': biz?._id ?? '-',
+      'Shop Number': biz.shopNumber ?? '-',
+      'Shop Status': biz.shopStatus ?? '-',
+      'Shop Name': biz.businessName ?? '-',
+      Supervisor: biz.supervisorName ?? '-',
+      'BA Name': biz.agentDetails ?? '-',
+      'Shop-owner': biz.customerName ?? '-',
+      'Mobile number': biz.phoneNumber ?? '-',
+      Gender: biz.gender ?? '-',
+      'Age Range': biz.ageRange ?? '-',
+      'Shop Type': biz.businessType ?? '-',
+      Employees: biz.numberOfEmployees ?? '-',
+      'Generator Ownership': biz.generatorOwnership ? 'Yes' : 'No',
+      'Generator Size': biz.generatorSize ?? '-',
+      'Energy Source': biz.currentEnergySource ?? '-',
+      'Spend Range': biz.willingnessToPay ?? '-',
+      'Payment Mode': biz.paymentPreference ?? '-',
+      'Energy Challenges': biz.energyChallenges?.join(', ') ?? '-',
+      'Hours of Electricity': biz.electricitySupply ?? '-',
+      'Load profile (kW)': biz.loadProfile ?? '-',
+      'Estimated Future Load (kW)': biz.estimatedFutureLoad ?? '-',
+      ...this.flattenAppliances(biz.appliances ?? []),
+      'Appliances (Previous Format)': biz.applianceUsed ?? '-',
+      'Picture (Shop Exterior)': biz?.images?.shopExteriorImage || '-',
+      'Picture (Shop Interior 1)': biz?.images?.shopInteriorImage1 || '-',
+      'Picture (Shop Interior 2)': biz?.images?.shopInteriorImage2 || '-',
+      'Picture (Shop Interior 3)': biz?.images?.shopInteriorImage3 || '-',
+      Consent: 'Yes',
+      Signature: biz.signature ?? '-',
+      'Additional Comments': biz.additionalComments ?? '-',
+      Auditor: biz.auditor ?? '-',
+      Status: biz.status ?? '-',
+      Comment: biz.comment ?? '-',
+    };
+  }
 
   private formatDateTime(date: Date) {
     const d = new Date(date);
@@ -516,7 +511,6 @@ private mapCustomerToCsvRow(biz: any, UNAPPROVED_COORDINATES: string) {
 
     return `${day}/${month}/${year}, ${longDate}`;
   }
-
 
   // ✅ Flatten appliances (fixed column structure)
   private flattenAppliances(appliances: any[] = []) {
