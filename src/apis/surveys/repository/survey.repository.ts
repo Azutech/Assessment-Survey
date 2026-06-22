@@ -22,4 +22,14 @@ export class SurveyRepository {
   ): Promise<Survey | null> {
     return this.surveyModel.findOne(where).select(attribute).exec();
   }
+
+  async updateinfo(where: any, data: any): Promise<Survey> {
+    try {
+      return await this.surveyModel.findOneAndUpdate(where, data, {
+        returnDocument: 'after',
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
 }

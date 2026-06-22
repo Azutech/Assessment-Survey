@@ -33,7 +33,6 @@ export class AgentRepository {
       return await this.agentModel.findOneAndUpdate(where, data, {
         returnDocument: 'after',
       });
-      // .select('-password');
     } catch (error) {
       throw error;
     }

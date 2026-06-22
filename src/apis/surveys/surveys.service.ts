@@ -3,8 +3,9 @@ import {
   ConflictException,
   Injectable,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
-import { CreateSurveyDto } from './dto/survey.dto';
+import { CreateSurveyDto, StatusUpdateDto } from './dto/survey.dto';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
@@ -12,12 +13,14 @@ import { SurveyRepository } from './repository/survey.repository';
 import { MarketRepository } from '../markets/repository/market.repository';
 import { AgentRepository } from '../agents/repository/agent.repository';
 import { APPLIANCES, shopTypeToSectionMap } from './constants/survey.constants';
+import { AdminRepository } from '../admin/repository/admin.repository';
 
 @Injectable()
 export class SurveysService {
   constructor(
     private httpService: HttpService,
     private configService: ConfigService,
+    private adminRepository: AdminRepository,
     private readonly surveyRepository: SurveyRepository,
     private readonly marketRepository: MarketRepository,
     private readonly agentRepository: AgentRepository,
@@ -107,6 +110,36 @@ export class SurveysService {
     );
 
     return newCustomer;
+  }
+
+  async setStatusAndComments(statusUpdateDto: StatusUpdateDto) {
+    const { surveyId, status, comment, userId } = statusUpdateDto;
+
+    const admin = await this.adminRepository.findOne({ _id: userId });
+    if (!admin) {
+      throw new NotFoundException({ message: 'Admin not found' });
+    }
+
+    const validStatuses = ['pending', 'verified', 'unverified'];
+    if (!validStatuses.includes(status)) {
+      throw new BadRequestException({
+        message: `Invalid status. Valid options are: ${validStatuses.join(', ')}`,
+      });
+    }
+
+    const findSurvey = await this.surveyRepository.findOne({
+      _id: surveyId,
+    });
+    if (!findSurvey) {
+      throw new NotFoundException({ message: 'Survey not found' });
+    }
+
+    const updatedCustomer = await this.surveyRepository.updateinfo(
+      { _id: surveyId },
+      { status, comment, auditor: admin.fullName },
+    );
+
+    return updatedCustomer;
   }
 
   private async getAddressFromGPS(gps: string): Promise<string | null> {
@@ -214,14 +247,14 @@ export class SurveysService {
   }
 
   private calculateApplianceConsumption(appliances: any[] = []) {
-  return appliances.map((appliance) => {
-    const quantity = Number(appliance.quantity || 0);
-    const watts = Number(appliance.watts || 0);
+    return appliances.map((appliance) => {
+      const quantity = Number(appliance.quantity || 0);
+      const watts = Number(appliance.watts || 0);
 
-    return {
-      ...appliance,
-      totalConsumption: watts * quantity,
-    };
-  });
-}
+      return {
+        ...appliance,
+        totalConsumption: watts * quantity,
+      };
+    });
+  }
 }

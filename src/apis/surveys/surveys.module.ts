@@ -10,6 +10,8 @@ import { Market, MarketSchema } from '../markets/entity/market.entity';
 import { Agent, agentSchema } from '../agents/entity/agent.entity';
 import { AgentRepository } from '../agents/repository/agent.repository';
 import { CustomJwtModule } from 'src/guards/jwt/jwt.module';
+import { AdminRepository } from '../admin/repository/admin.repository';
+import { Admin, AdminSchema } from '../admin/entity/admin.entity';
 
 @Module({
   imports: [
@@ -19,6 +21,7 @@ import { CustomJwtModule } from 'src/guards/jwt/jwt.module';
       { name: Market.name, schema: MarketSchema },
       { name: Survey.name, schema: surveySchema },
       { name: Agent.name, schema: agentSchema },
+      { name: Admin.name, schema: AdminSchema },
     ]),
   ],
   controllers: [SurveysController],
@@ -27,6 +30,7 @@ import { CustomJwtModule } from 'src/guards/jwt/jwt.module';
     SurveyRepository,
     MarketRepository,
     AgentRepository,
+    AdminRepository,
   ],
 })
 export class SurveysModule {}
