@@ -1,7 +1,8 @@
 // export/helpers/pdf-builder.helper.ts
-import PDFDocument from 'pdfkit';
+
 import { Response } from 'express';
 import { compressImage } from './compress-image.helper';
+const PDFDocument = require('pdfkit')
 
 export interface PdfSurvey {
   businessName: string;
@@ -42,6 +43,10 @@ export async function buildPDF(
       let totalOriginalBytes = 0;
       let totalCompressedBytes = 0;
 
+
+
+      console.log('ready')
+
       const imageResults = await Promise.all(
         surveys.map(async (survey) => {
           if (!survey.images?.shopExteriorImage) {
@@ -68,6 +73,8 @@ export async function buildPDF(
           Author: 'Noemdek Survey System',
         },
       });
+
+          console.log('player')
 
       const chunks: Buffer[] = [];
       doc.on('data', (chunk) => chunks.push(chunk));
