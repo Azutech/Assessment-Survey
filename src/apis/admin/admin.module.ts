@@ -7,6 +7,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Admin, AdminSchema } from './entity/admin.entity';
 import { AgentRepository } from '../agents/repository/agent.repository';
 import { Agent, agentSchema } from '../agents/entity/agent.entity';
+import { SurveyRepository } from '../surveys/repository/survey.repository';
+import { Survey, surveySchema } from '../surveys/entity/survey.entity';
 
 @Module({
   imports: [
@@ -14,9 +16,10 @@ import { Agent, agentSchema } from '../agents/entity/agent.entity';
     MongooseModule.forFeature([
       { name: Admin.name, schema: AdminSchema },
       { name: Agent.name, schema: agentSchema },
+      { name: Survey.name, schema: surveySchema },
     ]),
   ],
   controllers: [AdminController],
-  providers: [AdminService, AdminRepository, AgentRepository],
+  providers: [AdminService, AdminRepository, AgentRepository, SurveyRepository],
 })
 export class AdminModule {}

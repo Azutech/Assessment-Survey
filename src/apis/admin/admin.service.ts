@@ -11,6 +11,7 @@ import { compareSync, genSaltSync, hashSync } from 'bcrypt';
 import { JwtService } from 'src/guards/jwt/jwt.service';
 import { AgentRepository } from '../agents/repository/agent.repository';
 import { AgentStatus } from '../agents/utils/enum/util.enum';
+import { SurveyRepository } from '../surveys/repository/survey.repository';
 
 @Injectable()
 export class AdminService {
@@ -18,6 +19,7 @@ export class AdminService {
     private readonly adminRepository: AdminRepository,
     private readonly jwtService: JwtService,
     private readonly agentRepository: AgentRepository,
+    private readonly surveyRepository: SurveyRepository,
   ) {}
   async create(createAdminDto: CreateAdminDto) {
     let { email, password, fullName } = createAdminDto;

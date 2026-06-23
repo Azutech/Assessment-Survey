@@ -277,6 +277,52 @@ export class SurveyRepository {
     }
   }
 
+  async getElectricityDistribution() {
+    try {
+      return this.surveyModel.aggregate([
+        {
+          $group: {
+            _id: '$electricitySupply',
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            band: '$_id',
+            count: 1,
+          },
+        },
+        { $sort: { band: 1 } },
+      ]);
+    } catch (err: any) {
+      throw err;
+    }
+  }
+
+  async getWillingnessToPayDistribution() {
+    try {
+      return this.surveyModel.aggregate([
+        {
+          $group: {
+            _id: '$willingnessToPay',
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            band: '$_id',
+            count: 1,
+          },
+        },
+        { $sort: { count: -1 } },
+      ]);
+    } catch (err: any) {
+      throw err;
+    }
+  }
+
   async findAllCustomerExport(
     where: PropDataInput = {},
     agentId?: string,
