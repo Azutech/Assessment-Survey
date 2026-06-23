@@ -42,7 +42,7 @@ export class SurveysController {
   }
 
   @UseGuards(JwtAuthGuard, AdminOnlyGuard)
-  @Put('updateSurveyStatus')
+  @Patch('updateSurveyStatus')
   async updateSurveyStatus(
     @Req() req: any,
     @Res() res: Response,
