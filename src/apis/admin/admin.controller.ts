@@ -90,7 +90,10 @@ export class AdminController {
 
   @UseGuards(JwtAuthGuard, AdminOnlyGuard)
   @Get('viewSurveys')
-  async viewDashboardStats(@Query() query: GetSurveysQueryDto, @Res() res: Response) {
+  async viewDashboardStats(
+    @Query() query: GetSurveysQueryDto,
+    @Res() res: Response,
+  ) {
     const result = await this.adminsService.viewSurveys(query);
     return res
       .status(HttpStatus.OK)

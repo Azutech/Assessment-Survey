@@ -12,12 +12,17 @@ import { Market, MarketSchema } from '../markets/entity/market.entity';
 @Module({
   imports: [
     MongooseModule.forFeature([
-      {name: Survey.name, schema: surveySchema},
-      {name: Agent.name, schema: agentSchema},
-      {name: Market.name, schema: MarketSchema},
-      ])
+      { name: Survey.name, schema: surveySchema },
+      { name: Agent.name, schema: agentSchema },
+      { name: Market.name, schema: MarketSchema },
+    ]),
   ],
   controllers: [ExportController],
-  providers: [ExportService, SurveyRepository, AgentRepository, MarketRepository],
+  providers: [
+    ExportService,
+    SurveyRepository,
+    AgentRepository,
+    MarketRepository,
+  ],
 })
 export class ExportModule {}

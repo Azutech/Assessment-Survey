@@ -9,8 +9,6 @@ import { Agent } from 'src/apis/agents/entity/agent.entity';
 import { Market } from 'src/apis/markets/entity/market.entity';
 import { GetSurveysQueryDto } from '../dto/survey.dto';
 
-
-
 export interface ExportFilter {
   status?: string;
   market?: string;
@@ -27,9 +25,7 @@ export class SurveyRepository {
     @InjectModel(Market.name) private marketModel: Model<SurveyDocument>,
   ) {}
 
-
-
-    async findForExport(filter: ExportFilter) {
+  async findForExport(filter: ExportFilter) {
     const query: Record<string, any> = {};
 
     if (filter.status) query.status = filter.status;

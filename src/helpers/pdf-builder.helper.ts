@@ -2,7 +2,7 @@
 
 import { Response } from 'express';
 import { compressImage } from './compress-image.helper';
-const PDFDocument = require('pdfkit')
+const PDFDocument = require('pdfkit');
 
 export interface PdfSurvey {
   businessName: string;
@@ -43,9 +43,7 @@ export async function buildPDF(
       let totalOriginalBytes = 0;
       let totalCompressedBytes = 0;
 
-
-
-      console.log('ready')
+      console.log('ready');
 
       const imageResults = await Promise.all(
         surveys.map(async (survey) => {
@@ -74,7 +72,7 @@ export async function buildPDF(
         },
       });
 
-          console.log('player')
+      console.log('player');
 
       const chunks: Buffer[] = [];
       doc.on('data', (chunk) => chunks.push(chunk));
@@ -84,10 +82,7 @@ export async function buildPDF(
         const compressedPdfKB = Math.round(pdfBuffer.length / 1024);
 
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader(
-          'Content-Disposition',
-          'attachment; filename=report.pdf',
-        );
+        res.setHeader('Content-Disposition', 'attachment; filename=report.pdf');
         res.setHeader(
           'X-Original-Size-KB',
           Math.round(totalOriginalBytes / 1024),
@@ -115,10 +110,7 @@ export async function buildPDF(
       // date range
       const appliedFilters = Object.entries(filters).filter(([, v]) => v);
       if (appliedFilters.length > 0) {
-        doc
-          .fontSize(11)
-          .font('Helvetica-Bold')
-          .text('Filters Applied:');
+        doc.fontSize(11).font('Helvetica-Bold').text('Filters Applied:');
 
         doc.font('Helvetica');
         appliedFilters.forEach(([key, value]) => {
