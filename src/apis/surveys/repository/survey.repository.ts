@@ -9,6 +9,16 @@ import { Agent } from 'src/apis/agents/entity/agent.entity';
 import { Market } from 'src/apis/markets/entity/market.entity';
 import { GetSurveysQueryDto } from '../dto/survey.dto';
 
+
+
+export interface ExportFilter {
+  status?: string;
+  market?: string;
+  lga?: string;
+  energySource?: string;
+  dateRange?: string;
+}
+
 @Injectable()
 export class SurveyRepository {
   constructor(
@@ -16,6 +26,30 @@ export class SurveyRepository {
     @InjectModel(Agent.name) private agentModel: Model<SurveyDocument>,
     @InjectModel(Market.name) private marketModel: Model<SurveyDocument>,
   ) {}
+
+
+
+    async findForExport(filter: ExportFilter) {
+    const query: Record<string, any> = {};
+
+    if (filter.status) query.status = filter.status;
+    if (filter.market) query.marketName = filter.market;
+    if (filter.lga) query.marketLGA = { $regex: new RegExp(filter.lga, 'i') };
+    if (filter.energySource) query.currentEnergySource = filter.energySource;
+
+    if (filter.dateRange) {
+      const [from, to] = filter.dateRange.split(',');
+      query.createdAt = {
+        $gte: new Date(from),
+        $lte: new Date(to),
+      };
+    }
+
+    return this.surveyModel
+      .find(query)
+      .populate('marketName', 'marketName')
+      .lean();
+  }
 
   async create(customer: SurveyI): Promise<Survey> {
     const newCustomer = new this.surveyModel(customer);
