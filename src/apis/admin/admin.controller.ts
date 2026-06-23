@@ -18,7 +18,6 @@ import { CreateAdminDto, LoginAdminDto } from './dto/admin.dto';
 import { Response } from 'express';
 import { JwtAuthGuard } from 'src/guards/jwt/jwt.guard';
 import { AdminOnlyGuard } from 'src/guards/admin.guard';
-// import { AdminOnlyGuard } from 'src/guards/admin.guard';
 
 @Controller('admin')
 export class AdminController {

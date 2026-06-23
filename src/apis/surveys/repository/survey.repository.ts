@@ -5,11 +5,15 @@ import { SurveyDocument, Survey } from '../entity/survey.entity';
 import { Model, Types } from 'mongoose';
 import { PropDataInput } from '../../../common/utils/utils.interface';
 import { SurveyI } from '../interfaces/survey.interface';
+import { Agent } from 'src/apis/agents/entity/agent.entity';
+import { Market } from 'src/apis/markets/entity/market.entity';
 
 @Injectable()
 export class SurveyRepository {
   constructor(
     @InjectModel(Survey.name) private surveyModel: Model<SurveyDocument>,
+    @InjectModel(Agent.name) private agentModel: Model<SurveyDocument>,
+    @InjectModel(Market.name) private marketModel: Model<SurveyDocument>,
   ) {}
 
   async create(customer: SurveyI): Promise<Survey> {
@@ -806,4 +810,77 @@ export class SurveyRepository {
       throw err;
     }
   }
+
+
+  async getDashboardSummary() {
+  try {
+    const [surveyStats, totalMarkets, totalAgents] = await Promise.all([
+      this.surveyModel.aggregate([
+        {
+          $group: {
+            _id: null,
+            total: { $sum: 1 },
+            verified: {
+              $sum: { $cond: [{ $eq: ['$status', 'verified'] }, 1, 0] },
+            },
+            unverified: {
+              $sum: { $cond: [{ $eq: ['$status', 'unverified'] }, 1, 0] },
+            },
+            pending: {
+              $sum: { $cond: [{ $eq: ['$status', 'pending'] }, 1, 0] },
+            },
+            withGPS: {
+              $sum: {
+                $cond: [
+                  { $and: [{ $ne: ['$GPS', null] }, { $ne: ['$GPS', ''] }] },
+                  1,
+                  0,
+                ],
+              },
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            total: 1,
+            verified: 1,
+            unverified: 1,
+            pending: 1,
+            withGPS: 1,
+            withoutGPS: { $subtract: ['$total', '$withGPS'] },
+          },
+        },
+      ]),
+      this.marketModel.countDocuments(),
+      this.agentModel.countDocuments(),
+    ]);
+
+    const stats = surveyStats[0] ?? {
+      total: 0,
+      verified: 0,
+      unverified: 0,
+      pending: 0,
+      withGPS: 0,
+      withoutGPS: 0,
+    };
+
+    return {
+      message: 'Dashboard summary fetched successfully',
+      data: {
+        totalShops: stats.total,
+        verifiedCount: stats.verified,
+        unverifiedCount: stats.unverified,
+        pendingCount: stats.pending,
+        shopsWithGPS: stats.withGPS,
+        shopsWithoutGPS: stats.withoutGPS,
+        totalMarkets,
+        totalAgents,
+      },
+      meta: null,
+    }
+  } catch (err: any) {
+    throw err(err);
+  }
+}
 }

@@ -9,6 +9,8 @@ import { AgentRepository } from '../agents/repository/agent.repository';
 import { Agent, agentSchema } from '../agents/entity/agent.entity';
 import { SurveyRepository } from '../surveys/repository/survey.repository';
 import { Survey, surveySchema } from '../surveys/entity/survey.entity';
+import { MarketRepository } from '../markets/repository/market.repository';
+import { Market, MarketSchema } from '../markets/entity/market.entity';
 
 @Module({
   imports: [
@@ -17,9 +19,10 @@ import { Survey, surveySchema } from '../surveys/entity/survey.entity';
       { name: Admin.name, schema: AdminSchema },
       { name: Agent.name, schema: agentSchema },
       { name: Survey.name, schema: surveySchema },
+      { name: Market.name, schema: MarketSchema },
     ]),
   ],
   controllers: [AdminController],
-  providers: [AdminService, AdminRepository, AgentRepository, SurveyRepository],
+  providers: [AdminService, AdminRepository, AgentRepository, SurveyRepository, MarketRepository],
 })
 export class AdminModule {}
