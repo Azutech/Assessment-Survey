@@ -535,4 +535,135 @@ export class SurveyRepository {
       throw err;
     }
   }
+
+  async getSummaryAnalytics(dateRange?: string) {
+    try {
+      const matchStage: Record<string, any> = {};
+
+      if (dateRange) {
+        const [from, to] = dateRange.split(',');
+        matchStage.createdAt = {
+          $gte: new Date(from),
+          $lte: new Date(to),
+        };
+      }
+
+      const [summary, energyBreakdown] = await Promise.all([
+        this.surveyModel.aggregate([
+          { $match: matchStage },
+          {
+            $group: {
+              _id: null,
+              totalSubmissions: { $sum: 1 },
+              totalWithGPS: {
+                $sum: {
+                  $cond: [
+                    { $and: [{ $ne: ['$GPS', null] }, { $ne: ['$GPS', ''] }] },
+                    1,
+                    0,
+                  ],
+                },
+              },
+              totalWithPhotos: {
+                $sum: { $cond: ['$hasPictures', 1, 0] },
+              },
+              totalAppliances: {
+                $sum: { $size: { $ifNull: ['$appliances', []] } },
+              },
+              totalKwh: {
+                $sum: {
+                  $reduce: {
+                    input: { $ifNull: ['$appliances', []] },
+                    initialValue: 0,
+                    in: {
+                      $add: [
+                        '$$value',
+                        { $ifNull: ['$$this.totalConsumption', 0] },
+                      ],
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              totalSubmissions: 1,
+              totalWithGPS: 1,
+              totalWithPhotos: 1,
+              percentageWithGPS: {
+                $round: [
+                  {
+                    $multiply: [
+                      { $divide: ['$totalWithGPS', '$totalSubmissions'] },
+                      100,
+                    ],
+                  },
+                  2,
+                ],
+              },
+              percentageWithPhotos: {
+                $round: [
+                  {
+                    $multiply: [
+                      { $divide: ['$totalWithPhotos', '$totalSubmissions'] },
+                      100,
+                    ],
+                  },
+                  2,
+                ],
+              },
+              avgAppliancesPerShop: {
+                $round: [
+                  { $divide: ['$totalAppliances', '$totalSubmissions'] },
+                  2,
+                ],
+              },
+              totalKwh: { $round: ['$totalKwh', 2] },
+            },
+          },
+        ]),
+
+        // energy source breakdown — separate group
+        this.surveyModel.aggregate([
+          { $match: matchStage },
+          {
+            $group: {
+              _id: '$currentEnergySource',
+              count: { $sum: 1 },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              energySource: '$_id',
+              count: 1,
+            },
+          },
+          { $sort: { count: -1 } },
+        ]),
+      ]);
+
+      const result = summary[0] ?? {
+        totalSubmissions: 0,
+        totalWithGPS: 0,
+        totalWithPhotos: 0,
+        percentageWithGPS: 0,
+        percentageWithPhotos: 0,
+        avgAppliancesPerShop: 0,
+        totalKwh: 0,
+      };
+
+      return {
+        data: {
+          ...result,
+          energySourceBreakdown: energyBreakdown,
+        },
+        meta: null,
+      };
+    } catch (err: any) {
+      throw err;
+    }
+  }
 }

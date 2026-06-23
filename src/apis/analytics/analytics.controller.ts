@@ -7,12 +7,25 @@ export class AnalyticsController {
   constructor(private readonly analyticsService: AnalyticsService) {}
 
   @Get('marketAnalytics')
-  async marketAnalysis (@Res() res: Response, @Query('dateRange') dateRange: string) {
+  async marketAnalysis(
+    @Res() res: Response,
+    @Query('dateRange') dateRange: string,
+  ) {
+    const analysis = await this.analyticsService.marketAnalytics(dateRange);
 
-    const analysis = await this.analyticsService.marketAnalytics(dateRange)
-
-    return res.status(HttpStatus.OK).json({success: 'Analysis returned', analysis})
-
+    return res
+      .status(HttpStatus.OK)
+      .json({ success: 'Market Analysis returned', analysis });
   }
+  @Get('summaryAnalytics')
+  async summaryAnalytics(
+    @Res() res: Response,
+    @Query('dateRange') dateRange: string,
+  ) {
+    const analysis = await this.analyticsService.summaryAnalytics();
 
+    return res
+      .status(HttpStatus.OK)
+      .json({ success: 'Summary Analysis returned', analysis });
+  }
 }

@@ -11,4 +11,11 @@ export class AnalyticsService {
 
     return marketAnalysis;
   }
+
+  async summaryAnalytics(dateRange?: string): Promise<any> {
+    const summaryAnalysis =
+      await this.surveyRepository.getSummaryAnalytics(dateRange);
+
+    return summaryAnalysis;
+  }
 }
