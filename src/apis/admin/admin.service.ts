@@ -146,6 +146,6 @@ export class AdminService {
 
   async viewSurveys(getSurvey: GetSurveysQueryDto) {
     const data = await this.surveyRepository.getSurveys(getSurvey);
-    return data
+    return data;
   }
 }

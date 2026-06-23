@@ -9,6 +9,7 @@ import { AgentsModule } from './apis/agents/agents.module';
 import { FileuploadModule } from './fileupload/fileupload.module';
 import { AdminModule } from './apis/admin/admin.module';
 import { AnalyticsModule } from './apis/analytics/analytics.module';
+import { ExportModule } from './apis/export/export.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { AnalyticsModule } from './apis/analytics/analytics.module';
     FileuploadModule,
     AdminModule,
     AnalyticsModule,
+    ExportModule,
   ],
   controllers: [AppController],
   providers: [AppService],

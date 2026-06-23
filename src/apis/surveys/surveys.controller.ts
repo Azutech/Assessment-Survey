@@ -112,31 +112,4 @@ export class SurveysController {
       .status(HttpStatus.OK)
       .json({ msg: 'Customers retrieved successfully', customers });
   }
-
-  @Get('exportCustomersCsv')
-  async exportCustomersCsv(
-    @Res() res: Response,
-    @Query('agentId') agentId: string,
-    @Query('marketName') marketName: string,
-    @Query('marketLGA') marketLGA: string,
-    @Query('marketEntity') marketEntity: string,
-    @Query('customerName') customerName?: string,
-    @Query('LGA_Eligibility', OptionalBoolPipe) LGA_Eligibility?: boolean,
-    @Query('hasPictures', OptionalBoolPipe) hasPictures?: boolean,
-  ) {
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename="survey.csv"');
-
-    const stream = await this.surveysService.buildCsvStream({
-      agentId,
-      marketName,
-      marketLGA,
-      marketEntity,
-      customerName,
-      LGA_Eligibility,
-      hasPictures,
-    });
-
-    stream.pipe(res);
-  }
 }
