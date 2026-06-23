@@ -31,12 +31,19 @@ export async function compressImage(
   if (!buffer) return null;
 
   const originalSize = buffer.length;
-  const { width, jpegQuality } = qualityMap[quality];
+  const { width } = qualityMap[quality];
+  let jpegQuality = qualityMap[quality].jpegQuality;
+  let compressed: Buffer;
 
-  const compressed = await sharp(buffer)
-    .resize({ width, withoutEnlargement: true })
-    .jpeg({ quality: jpegQuality })
-    .toBuffer();
+  // reduce quality until under 150KB
+  do {
+    compressed = await sharp(buffer)
+      .resize({ width, withoutEnlargement: true })
+      .jpeg({ quality: jpegQuality })
+      .toBuffer();
+
+    jpegQuality -= 10;
+  } while (compressed.length > 150 * 1024 && jpegQuality > 10);
 
   return {
     buffer: compressed,
