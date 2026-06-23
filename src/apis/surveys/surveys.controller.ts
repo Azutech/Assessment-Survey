@@ -121,7 +121,7 @@ export class SurveysController {
     @Query('marketLGA') marketLGA: string,
     @Query('marketEntity') marketEntity: string,
     @Query('customerName') customerName?: string,
-     @Query('LGA_Eligibility', OptionalBoolPipe) LGA_Eligibility?: boolean,
+    @Query('LGA_Eligibility', OptionalBoolPipe) LGA_Eligibility?: boolean,
     @Query('hasPictures', OptionalBoolPipe) hasPictures?: boolean,
   ) {
     res.setHeader('Content-Type', 'text/csv');
