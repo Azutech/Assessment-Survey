@@ -12,9 +12,18 @@ import { Market, MarketSchema } from '../markets/entity/market.entity';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Survey.name, schema: surveySchema }, {name: Agent.name, schema: agentSchema }, {name: Market.name, schema: MarketSchema}]),
+    MongooseModule.forFeature([
+      { name: Survey.name, schema: surveySchema },
+      { name: Agent.name, schema: agentSchema },
+      { name: Market.name, schema: MarketSchema },
+    ]),
   ],
   controllers: [AnalyticsController],
-  providers: [AnalyticsService, SurveyRepository, AgentRepository, MarketRepository],
+  providers: [
+    AnalyticsService,
+    SurveyRepository,
+    AgentRepository,
+    MarketRepository,
+  ],
 })
 export class AnalyticsModule {}

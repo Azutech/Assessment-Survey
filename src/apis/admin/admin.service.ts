@@ -130,16 +130,16 @@ export class AdminService {
     };
   }
 
-  async willingnessToPayDistributionChart () {
-    const data = await this.surveyRepository.getWillingnessToPayDistribution()
-    return data
+  async willingnessToPayDistributionChart() {
+    const data = await this.surveyRepository.getWillingnessToPayDistribution();
+    return data;
   }
-  async getElectricityDistribution () {
-    const data = await this.surveyRepository.getElectricityDistribution()
-    return data
+  async getElectricityDistribution() {
+    const data = await this.surveyRepository.getElectricityDistribution();
+    return data;
   }
-  async dashboardSummary () {
-    const data = await this.surveyRepository.getDashboardSummary()
-    return data
+  async dashboardSummary() {
+    const data = await this.surveyRepository.getDashboardSummary();
+    return data;
   }
 }

@@ -31,7 +31,6 @@ import { Admin, AdminSchema } from '../admin/entity/admin.entity';
     MarketRepository,
     AgentRepository,
     AdminRepository,
-
   ],
 })
 export class SurveysModule {}

@@ -23,6 +23,12 @@ import { Market, MarketSchema } from '../markets/entity/market.entity';
     ]),
   ],
   controllers: [AdminController],
-  providers: [AdminService, AdminRepository, AgentRepository, SurveyRepository, MarketRepository],
+  providers: [
+    AdminService,
+    AdminRepository,
+    AgentRepository,
+    SurveyRepository,
+    MarketRepository,
+  ],
 })
 export class AdminModule {}

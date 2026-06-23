@@ -59,22 +59,31 @@ export class AdminController {
 
   @UseGuards(JwtAuthGuard, AdminOnlyGuard)
   @Get('willingnessToPayDistributionChart')
-  async willingnessToPayDistributionChart(@Req() req: any, @Res() res: Response) {
+  async willingnessToPayDistributionChart(
+    @Req() req: any,
+    @Res() res: Response,
+  ) {
     const result = await this.adminsService.willingnessToPayDistributionChart();
-    return res.status(HttpStatus.OK).json({success: "willingness To Pay data returned",result});
+    return res
+      .status(HttpStatus.OK)
+      .json({ success: 'willingness To Pay data returned', result });
   }
 
   @UseGuards(JwtAuthGuard, AdminOnlyGuard)
   @Get('getElectricityDistribution')
   async getElectricityDistribution(@Req() req: any, @Res() res: Response) {
     const result = await this.adminsService.getElectricityDistribution();
-    return res.status(HttpStatus.OK).json({success: "Electricity Distribution data returned",result});
+    return res
+      .status(HttpStatus.OK)
+      .json({ success: 'Electricity Distribution data returned', result });
   }
 
   @UseGuards(JwtAuthGuard, AdminOnlyGuard)
   @Get('dashboardSummary')
   async dashboardSummary(@Req() req: any, @Res() res: Response) {
     const result = await this.adminsService.dashboardSummary();
-    return res.status(HttpStatus.OK).json({success: "Dashboard Summary data returned", result});
+    return res
+      .status(HttpStatus.OK)
+      .json({ success: 'Dashboard Summary data returned', result });
   }
 }
