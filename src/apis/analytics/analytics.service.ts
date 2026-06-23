@@ -18,4 +18,11 @@ export class AnalyticsService {
 
     return summaryAnalysis;
   }
+
+  async getAgentAnalytics(dateRange?: string): Promise<any> {
+    const agentAnalysis =
+      await this.surveyRepository.getAgentAnalytics(dateRange);
+
+    return agentAnalysis;
+  }
 }

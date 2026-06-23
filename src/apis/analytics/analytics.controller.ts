@@ -17,6 +17,7 @@ export class AnalyticsController {
       .status(HttpStatus.OK)
       .json({ success: 'Market Analysis returned', analysis });
   }
+
   @Get('summaryAnalytics')
   async summaryAnalytics(
     @Res() res: Response,
@@ -27,5 +28,16 @@ export class AnalyticsController {
     return res
       .status(HttpStatus.OK)
       .json({ success: 'Summary Analysis returned', analysis });
+  }
+  @Get('agentAnalytics')
+  async getAgentAnalytics(
+    @Res() res: Response,
+    @Query('dateRange') dateRange: string,
+  ) {
+    const analysis = await this.analyticsService.getAgentAnalytics();
+
+    return res
+      .status(HttpStatus.OK)
+      .json({ success: 'Agent Analysis returned', analysis });
   }
 }

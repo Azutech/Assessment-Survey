@@ -666,4 +666,98 @@ export class SurveyRepository {
       throw err;
     }
   }
+
+  async getAgentAnalytics(dateRange?: string) {
+    try {
+      const matchStage: Record<string, any> = {};
+
+      if (dateRange) {
+        const [from, to] = dateRange.split(',');
+        matchStage.createdAt = {
+          $gte: new Date(from),
+          $lte: new Date(to),
+        };
+      }
+
+      const data = await this.surveyModel.aggregate([
+        { $match: matchStage },
+        {
+          $group: {
+            _id: '$agentId',
+            agentDetails: { $first: '$agentDetails' },
+            totalSubmissions: { $sum: 1 },
+            firstSubmission: { $min: '$createdAt' },
+            lastSubmission: { $max: '$createdAt' },
+            durations: { $push: '$duration' },
+          },
+        },
+        {
+          $lookup: {
+            from: 'agents',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'agent',
+          },
+        },
+        {
+          $unwind: {
+            path: '$agent',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            agentId: '$_id',
+            agentName: '$agentDetails',
+            email: '$agent.email',
+            totalSubmissions: 1,
+            firstSubmission: 1,
+            lastSubmission: 1,
+            durations: 1,
+          },
+        },
+        { $sort: { totalSubmissions: -1 } },
+      ]);
+
+      // compute average duration per agent — duration stored as "0h 4m 31s"
+      const result = data.map((agent) => {
+        const totalSeconds = agent.durations.reduce(
+          (acc: number, d: string) => {
+            if (!d) return acc;
+            const hours = parseInt(d.match(/(\d+)h/)?.[1] ?? '0');
+            const minutes = parseInt(d.match(/(\d+)m/)?.[1] ?? '0');
+            const seconds = parseInt(d.match(/(\d+)s/)?.[1] ?? '0');
+            return acc + hours * 3600 + minutes * 60 + seconds;
+          },
+          0,
+        );
+
+        const avgSeconds = Math.floor(
+          totalSeconds / (agent.durations.length || 1),
+        );
+        const avgHours = Math.floor(avgSeconds / 3600);
+        const avgMinutes = Math.floor((avgSeconds % 3600) / 60);
+        const avgSecs = avgSeconds % 60;
+
+        const { durations, ...rest } = agent;
+
+        return {
+          ...rest,
+          avgSurveyDuration: `${avgHours}h ${avgMinutes}m ${avgSecs}s`,
+          activeDateRange: {
+            from: agent.firstSubmission,
+            to: agent.lastSubmission,
+          },
+        };
+      });
+
+      return {
+        data: result,
+        meta: { total: result.length },
+      };
+    } catch (err: any) {
+      throw err;
+    }
+  }
 }
