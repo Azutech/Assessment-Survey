@@ -443,92 +443,96 @@ export class SurveyRepository {
     }
   }
   async getMarketAnalytics(dateRange?: string) {
-    const matchStage: Record<string, any> = {};
+    try {
+      const matchStage: Record<string, any> = {};
 
-    if (dateRange) {
-      const [from, to] = dateRange.split(',');
-      matchStage.createdAt = {
-        $gte: new Date(from),
-        $lte: new Date(to),
-      };
-    }
-
-    const data = await this.surveyModel.aggregate([
-      { $match: matchStage },
-      {
-        $group: {
-          _id: '$marketName',
-          totalSubmissions: { $sum: 1 },
-          verifiedCount: {
-            $sum: { $cond: [{ $eq: ['$status', 'verified'] }, 1, 0] },
-          },
-          avgEnergyConsumption: { $avg: '$dailyEnergyConsumption' },
-          energySources: { $push: '$currentEnergySource' },
-          marketLGA: { $first: '$marketLGA' },
-          marketState: { $first: '$marketState' },
-        },
-      },
-      {
-        $addFields: {
-          percentageVerified: {
-            $round: [
-              {
-                $multiply: [
-                  { $divide: ['$verifiedCount', '$totalSubmissions'] },
-                  100,
-                ],
-              },
-              2,
-            ],
-          },
-        },
-      },
-      {
-        $lookup: {
-          from: 'markets',
-          localField: '_id',
-          foreignField: '_id',
-          as: 'market',
-        },
-      },
-      {
-        $unwind: {
-          path: '$market',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          marketId: '$_id',
-          marketName: '$market.marketName',
-          marketLGA: 1,
-          marketState: 1,
-          totalSubmissions: 1,
-          verifiedCount: 1,
-          percentageVerified: 1,
-          avgEnergyConsumption: { $round: ['$avgEnergyConsumption', 2] },
-          energySources: 1,
-        },
-      },
-      { $sort: { totalSubmissions: -1 } },
-    ]);
-
-    const result = data.map((market) => {
-      const frequency: Record<string, number> = {};
-      for (const source of market.energySources) {
-        if (source) frequency[source] = (frequency[source] || 0) + 1;
+      if (dateRange) {
+        const [from, to] = dateRange.split(',');
+        matchStage.createdAt = {
+          $gte: new Date(from),
+          $lte: new Date(to),
+        };
       }
-      const mostCommonEnergySource =
-        Object.entries(frequency).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
 
-      const { energySources, ...rest } = market;
-      return { ...rest, mostCommonEnergySource };
-    });
+      const data = await this.surveyModel.aggregate([
+        { $match: matchStage },
+        {
+          $group: {
+            _id: '$marketName',
+            totalSubmissions: { $sum: 1 },
+            verifiedCount: {
+              $sum: { $cond: [{ $eq: ['$status', 'verified'] }, 1, 0] },
+            },
+            avgEnergyConsumption: { $avg: '$dailyEnergyConsumption' },
+            energySources: { $push: '$currentEnergySource' },
+            marketLGA: { $first: '$marketLGA' },
+            marketState: { $first: '$marketState' },
+          },
+        },
+        {
+          $addFields: {
+            percentageVerified: {
+              $round: [
+                {
+                  $multiply: [
+                    { $divide: ['$verifiedCount', '$totalSubmissions'] },
+                    100,
+                  ],
+                },
+                2,
+              ],
+            },
+          },
+        },
+        {
+          $lookup: {
+            from: 'markets',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'market',
+          },
+        },
+        {
+          $unwind: {
+            path: '$market',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            marketId: '$_id',
+            marketName: '$market.marketName',
+            marketLGA: 1,
+            marketState: 1,
+            totalSubmissions: 1,
+            verifiedCount: 1,
+            percentageVerified: 1,
+            avgEnergyConsumption: { $round: ['$avgEnergyConsumption', 2] },
+            energySources: 1,
+          },
+        },
+        { $sort: { totalSubmissions: -1 } },
+      ]);
 
-    return {
-      data: result,
-      meta: { total: result.length },
-    };
+      const result = data.map((market) => {
+        const frequency: Record<string, number> = {};
+        for (const source of market.energySources) {
+          if (source) frequency[source] = (frequency[source] || 0) + 1;
+        }
+        const mostCommonEnergySource =
+          Object.entries(frequency).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+
+        const { energySources, ...rest } = market;
+        return { ...rest, mostCommonEnergySource };
+      });
+
+      return {
+        data: result,
+        meta: { total: result.length },
+      };
+    } catch (err: any) {
+      throw err;
+    }
   }
 }
