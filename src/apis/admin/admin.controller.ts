@@ -70,4 +70,11 @@ export class AdminController {
     const result = await this.adminsService.getElectricityDistribution();
     return res.status(HttpStatus.OK).json({success: "Electricity Distribution data returned",result});
   }
+
+  @UseGuards(JwtAuthGuard, AdminOnlyGuard)
+  @Get('dashboardSummary')
+  async dashboardSummary(@Req() req: any, @Res() res: Response) {
+    const result = await this.adminsService.dashboardSummary();
+    return res.status(HttpStatus.OK).json({success: "Dashboard Summary data returned", result});
+  }
 }

@@ -138,4 +138,8 @@ export class AdminService {
     const data = await this.surveyRepository.getElectricityDistribution()
     return data
   }
+  async dashboardSummary () {
+    const data = await this.surveyRepository.getDashboardSummary()
+    return data
+  }
 }
