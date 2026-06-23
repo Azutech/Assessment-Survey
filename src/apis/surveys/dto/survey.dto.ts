@@ -160,3 +160,27 @@ const statusSurveySchema = z.object({
 export class StatusUpdateDto extends createZodDto(statusSurveySchema) {
   userId: string;
 }
+
+const getSurveysQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).optional().default(1),
+  limit: z.coerce.number().int().min(1).max(100).optional().default(10),
+  market: z.string().trim().optional(),
+  lga: z.string().trim().optional(),
+  status: z.enum(['pending', 'verified', 'unverified']).optional(),
+  energySource: z
+    .enum([
+      'petrol-generator',
+      'diesel-generator',
+      'grid-power',
+      'solar-home-system',
+      'battery-lamp',
+      'none',
+    ])
+    .optional(),
+  hasGPS: z.enum(['true', 'false']).optional(),
+  hasPictures: z.enum(['true', 'false']).optional(),
+  search: z.string().trim().optional(),
+  dateRange: z.string().optional(),
+});
+
+export class GetSurveysQueryDto extends createZodDto(getSurveysQuerySchema) {}

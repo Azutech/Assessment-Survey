@@ -7,6 +7,7 @@ import { PropDataInput } from '../../../common/utils/utils.interface';
 import { SurveyI } from '../interfaces/survey.interface';
 import { Agent } from 'src/apis/agents/entity/agent.entity';
 import { Market } from 'src/apis/markets/entity/market.entity';
+import { GetSurveysQueryDto } from '../dto/survey.dto';
 
 @Injectable()
 export class SurveyRepository {
@@ -877,6 +878,87 @@ export class SurveyRepository {
           totalAgents,
         },
         meta: null,
+      };
+    } catch (err: any) {
+      throw err(err);
+    }
+  }
+
+  async getSurveys(query: GetSurveysQueryDto) {
+    try {
+      const {
+        page = 1,
+        limit = 10,
+        market,
+        lga,
+        status,
+        energySource,
+        hasGPS,
+        hasPictures,
+        search,
+        dateRange,
+      } = query;
+
+      const filter: Record<string, any> = {};
+
+      if (market) filter.marketName = market;
+      if (lga) filter.marketLGA = { $regex: new RegExp(lga, 'i') };
+      if (status) filter.status = status;
+      if (energySource) filter.currentEnergySource = energySource;
+
+      if (hasGPS !== undefined) {
+        filter.GPS =
+          hasGPS === 'true' ? { $exists: true, $ne: '' } : { $in: [null, ''] };
+      }
+
+      if (hasPictures !== undefined) {
+        filter.hasPictures = hasPictures === 'true';
+      }
+
+      if (search) {
+        filter.$or = [
+          { businessName: { $regex: new RegExp(search, 'i') } },
+          { customerName: { $regex: new RegExp(search, 'i') } },
+          { phoneNumber: { $regex: new RegExp(search, 'i') } },
+        ];
+      }
+
+      if (dateRange) {
+        const [from, to] = dateRange.split(',');
+        filter.createdAt = {
+          $gte: new Date(from),
+          $lte: new Date(to),
+        };
+      }
+
+      const skip = (Number(page) - 1) * Number(limit);
+
+      const [surveys, total] = await Promise.all([
+        this.surveyModel
+          .find(filter)
+          .select(
+            // exactly what the table needs — nothing more
+            'businessName customerName phoneNumber ' +
+              'marketName marketLGA currentEnergySource ' +
+              'electricitySupply GPS hasPictures status createdAt',
+          )
+          .populate('marketName', 'marketName')
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(Number(limit))
+          .lean(),
+        this.surveyModel.countDocuments(filter),
+      ]);
+
+      return {
+        message: 'Surveys fetched successfully',
+        data: surveys,
+        meta: {
+          total,
+          page: Number(page),
+          limit: Number(limit),
+          totalPages: Math.ceil(total / Number(limit)),
+        },
       };
     } catch (err: any) {
       throw err(err);

@@ -15,9 +15,10 @@ import {
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { CreateAdminDto, LoginAdminDto } from './dto/admin.dto';
-import { Response } from 'express';
+import { query, Response } from 'express';
 import { JwtAuthGuard } from 'src/guards/jwt/jwt.guard';
 import { AdminOnlyGuard } from 'src/guards/admin.guard';
+import { GetSurveysQueryDto } from '../surveys/dto/survey.dto';
 
 @Controller('admin')
 export class AdminController {
@@ -85,5 +86,14 @@ export class AdminController {
     return res
       .status(HttpStatus.OK)
       .json({ success: 'Dashboard Summary data returned', result });
+  }
+
+  @UseGuards(JwtAuthGuard, AdminOnlyGuard)
+  @Get('viewSurveys')
+  async viewDashboardStats(@Query() query: GetSurveysQueryDto, @Res() res: Response) {
+    const result = await this.adminsService.viewSurveys(query);
+    return res
+      .status(HttpStatus.OK)
+      .json({ success: 'View Dashboard Stats data returned', result });
   }
 }

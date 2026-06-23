@@ -12,6 +12,7 @@ import { JwtService } from 'src/guards/jwt/jwt.service';
 import { AgentRepository } from '../agents/repository/agent.repository';
 import { AgentStatus } from '../agents/utils/enum/util.enum';
 import { SurveyRepository } from '../surveys/repository/survey.repository';
+import { GetSurveysQueryDto } from '../surveys/dto/survey.dto';
 
 @Injectable()
 export class AdminService {
@@ -141,5 +142,10 @@ export class AdminService {
   async dashboardSummary() {
     const data = await this.surveyRepository.getDashboardSummary();
     return data;
+  }
+
+  async viewSurveys(getSurvey: GetSurveysQueryDto) {
+    const data = await this.surveyRepository.getSurveys(getSurvey);
+    return data
   }
 }
