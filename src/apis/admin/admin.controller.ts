@@ -57,4 +57,18 @@ export class AdminController {
     const result = await this.adminsService.adminDashboard(userId);
     return res.status(HttpStatus.OK).json(result);
   }
+
+  @UseGuards(JwtAuthGuard, AdminOnlyGuard)
+  @Get('willingnessToPayDistributionChart')
+  async willingnessToPayDistributionChart(@Req() req: any, @Res() res: Response) {
+    const result = await this.adminsService.willingnessToPayDistributionChart();
+    return res.status(HttpStatus.OK).json({success: "willingness To Pay data returned",result});
+  }
+
+  @UseGuards(JwtAuthGuard, AdminOnlyGuard)
+  @Get('getElectricityDistribution')
+  async getElectricityDistribution(@Req() req: any, @Res() res: Response) {
+    const result = await this.adminsService.getElectricityDistribution();
+    return res.status(HttpStatus.OK).json({success: "Electricity Distribution data returned",result});
+  }
 }

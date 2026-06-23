@@ -129,4 +129,13 @@ export class AdminService {
       data: admin,
     };
   }
+
+  async willingnessToPayDistributionChart () {
+    const data = await this.surveyRepository.getWillingnessToPayDistribution()
+    return data
+  }
+  async getElectricityDistribution () {
+    const data = await this.surveyRepository.getElectricityDistribution()
+    return data
+  }
 }
