@@ -8,6 +8,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AgentsModule } from './apis/agents/agents.module';
 import { FileuploadModule } from './fileupload/fileupload.module';
 import { AdminModule } from './apis/admin/admin.module';
+import { AnalyticsModule } from './apis/analytics/analytics.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AdminModule } from './apis/admin/admin.module';
     AgentsModule,
     FileuploadModule,
     AdminModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -442,4 +442,322 @@ export class SurveyRepository {
       throw error;
     }
   }
+  async getMarketAnalytics(dateRange?: string) {
+    try {
+      const matchStage: Record<string, any> = {};
+
+      if (dateRange) {
+        const [from, to] = dateRange.split(',');
+        matchStage.createdAt = {
+          $gte: new Date(from),
+          $lte: new Date(to),
+        };
+      }
+
+      const data = await this.surveyModel.aggregate([
+        { $match: matchStage },
+        {
+          $group: {
+            _id: '$marketName',
+            totalSubmissions: { $sum: 1 },
+            verifiedCount: {
+              $sum: { $cond: [{ $eq: ['$status', 'verified'] }, 1, 0] },
+            },
+            avgEnergyConsumption: { $avg: '$dailyEnergyConsumption' },
+            energySources: { $push: '$currentEnergySource' },
+            marketLGA: { $first: '$marketLGA' },
+            marketState: { $first: '$marketState' },
+          },
+        },
+        {
+          $addFields: {
+            percentageVerified: {
+              $round: [
+                {
+                  $multiply: [
+                    { $divide: ['$verifiedCount', '$totalSubmissions'] },
+                    100,
+                  ],
+                },
+                2,
+              ],
+            },
+          },
+        },
+        {
+          $lookup: {
+            from: 'markets',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'market',
+          },
+        },
+        {
+          $unwind: {
+            path: '$market',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            marketId: '$_id',
+            marketName: '$market.marketName',
+            marketLGA: 1,
+            marketState: 1,
+            totalSubmissions: 1,
+            verifiedCount: 1,
+            percentageVerified: 1,
+            avgEnergyConsumption: { $round: ['$avgEnergyConsumption', 2] },
+            energySources: 1,
+          },
+        },
+        { $sort: { totalSubmissions: -1 } },
+      ]);
+
+      const result = data.map((market) => {
+        const frequency: Record<string, number> = {};
+        for (const source of market.energySources) {
+          if (source) frequency[source] = (frequency[source] || 0) + 1;
+        }
+        const mostCommonEnergySource =
+          Object.entries(frequency).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+
+        const { energySources, ...rest } = market;
+        return { ...rest, mostCommonEnergySource };
+      });
+
+      return {
+        data: result,
+        meta: { total: result.length },
+      };
+    } catch (err: any) {
+      throw err;
+    }
+  }
+
+  async getSummaryAnalytics(dateRange?: string) {
+    try {
+      const matchStage: Record<string, any> = {};
+
+      if (dateRange) {
+        const [from, to] = dateRange.split(',');
+        matchStage.createdAt = {
+          $gte: new Date(from),
+          $lte: new Date(to),
+        };
+      }
+
+      const [summary, energyBreakdown] = await Promise.all([
+        this.surveyModel.aggregate([
+          { $match: matchStage },
+          {
+            $group: {
+              _id: null,
+              totalSubmissions: { $sum: 1 },
+              totalWithGPS: {
+                $sum: {
+                  $cond: [
+                    { $and: [{ $ne: ['$GPS', null] }, { $ne: ['$GPS', ''] }] },
+                    1,
+                    0,
+                  ],
+                },
+              },
+              totalWithPhotos: {
+                $sum: { $cond: ['$hasPictures', 1, 0] },
+              },
+              totalAppliances: {
+                $sum: { $size: { $ifNull: ['$appliances', []] } },
+              },
+              totalKwh: {
+                $sum: {
+                  $reduce: {
+                    input: { $ifNull: ['$appliances', []] },
+                    initialValue: 0,
+                    in: {
+                      $add: [
+                        '$$value',
+                        { $ifNull: ['$$this.totalConsumption', 0] },
+                      ],
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              totalSubmissions: 1,
+              totalWithGPS: 1,
+              totalWithPhotos: 1,
+              percentageWithGPS: {
+                $round: [
+                  {
+                    $multiply: [
+                      { $divide: ['$totalWithGPS', '$totalSubmissions'] },
+                      100,
+                    ],
+                  },
+                  2,
+                ],
+              },
+              percentageWithPhotos: {
+                $round: [
+                  {
+                    $multiply: [
+                      { $divide: ['$totalWithPhotos', '$totalSubmissions'] },
+                      100,
+                    ],
+                  },
+                  2,
+                ],
+              },
+              avgAppliancesPerShop: {
+                $round: [
+                  { $divide: ['$totalAppliances', '$totalSubmissions'] },
+                  2,
+                ],
+              },
+              totalKwh: { $round: ['$totalKwh', 2] },
+            },
+          },
+        ]),
+
+        // energy source breakdown — separate group
+        this.surveyModel.aggregate([
+          { $match: matchStage },
+          {
+            $group: {
+              _id: '$currentEnergySource',
+              count: { $sum: 1 },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              energySource: '$_id',
+              count: 1,
+            },
+          },
+          { $sort: { count: -1 } },
+        ]),
+      ]);
+
+      const result = summary[0] ?? {
+        totalSubmissions: 0,
+        totalWithGPS: 0,
+        totalWithPhotos: 0,
+        percentageWithGPS: 0,
+        percentageWithPhotos: 0,
+        avgAppliancesPerShop: 0,
+        totalKwh: 0,
+      };
+
+      return {
+        data: {
+          ...result,
+          energySourceBreakdown: energyBreakdown,
+        },
+        meta: null,
+      };
+    } catch (err: any) {
+      throw err;
+    }
+  }
+
+  async getAgentAnalytics(dateRange?: string) {
+    try {
+      const matchStage: Record<string, any> = {};
+
+      if (dateRange) {
+        const [from, to] = dateRange.split(',');
+        matchStage.createdAt = {
+          $gte: new Date(from),
+          $lte: new Date(to),
+        };
+      }
+
+      const data = await this.surveyModel.aggregate([
+        { $match: matchStage },
+        {
+          $group: {
+            _id: '$agentId',
+            agentDetails: { $first: '$agentDetails' },
+            totalSubmissions: { $sum: 1 },
+            firstSubmission: { $min: '$createdAt' },
+            lastSubmission: { $max: '$createdAt' },
+            durations: { $push: '$duration' },
+          },
+        },
+        {
+          $lookup: {
+            from: 'agents',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'agent',
+          },
+        },
+        {
+          $unwind: {
+            path: '$agent',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            agentId: '$_id',
+            agentName: '$agentDetails',
+            email: '$agent.email',
+            totalSubmissions: 1,
+            firstSubmission: 1,
+            lastSubmission: 1,
+            durations: 1,
+          },
+        },
+        { $sort: { totalSubmissions: -1 } },
+      ]);
+
+      // compute average duration per agent — duration stored as "0h 4m 31s"
+      const result = data.map((agent) => {
+        const totalSeconds = agent.durations.reduce(
+          (acc: number, d: string) => {
+            if (!d) return acc;
+            const hours = parseInt(d.match(/(\d+)h/)?.[1] ?? '0');
+            const minutes = parseInt(d.match(/(\d+)m/)?.[1] ?? '0');
+            const seconds = parseInt(d.match(/(\d+)s/)?.[1] ?? '0');
+            return acc + hours * 3600 + minutes * 60 + seconds;
+          },
+          0,
+        );
+
+        const avgSeconds = Math.floor(
+          totalSeconds / (agent.durations.length || 1),
+        );
+        const avgHours = Math.floor(avgSeconds / 3600);
+        const avgMinutes = Math.floor((avgSeconds % 3600) / 60);
+        const avgSecs = avgSeconds % 60;
+
+        const { durations, ...rest } = agent;
+
+        return {
+          ...rest,
+          avgSurveyDuration: `${avgHours}h ${avgMinutes}m ${avgSecs}s`,
+          activeDateRange: {
+            from: agent.firstSubmission,
+            to: agent.lastSubmission,
+          },
+        };
+      });
+
+      return {
+        data: result,
+        meta: { total: result.length },
+      };
+    } catch (err: any) {
+      throw err;
+    }
+  }
 }
