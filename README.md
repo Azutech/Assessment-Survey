@@ -1,73 +1,139 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# Market Shop Survey Tool
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Installation
+
+
+
+
+
+
+
+Base URL: `http://localhost:3026`
+
+API Documentation: [Postman](https://documenter.getpostman.com/view/your-collection-link)
+
+All endpoints require `Authorization: Bearer <token>` unless marked public.
+
+---
+
+## Auth
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /auth/login | Agent/admin login |
+| POST | /auth/logout | Logout |
+
+## Agents
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /agents/signUp | Register new agent |
+| GET | /agents | Get all agents |
+| GET | /agents/:id | Get agent by ID |
+
+## Markets
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /markets | Get all markets (supports ?search=) |
+| GET | /markets/:id | Get market by ID |
+
+## Uploads
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /uploads | Upload file to DO Spaces — returns URL |
+
+## Surveys
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /surveys | Submit new survey |
+| GET | /surveys | List surveys (?page, ?limit, ?search, ?status, ?market, ?lga, ?energySource, ?hasGPS, ?hasPictures, ?dateRange) |
+| GET | /surveys/:id | Get single survey with full details |
+| PATCH | /surveys/:id/status | Update status (verified \| unverified \| pending) |
+
+## Analytics
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /analytics/dashboard | Summary cards — total shops, verified, pending, GPS, markets, agents |
+| GET | /analytics/summary | Aggregate metrics + energy source breakdown (?dateRange) |
+| GET | /analytics/markets | Per-market stats (?dateRange) |
+| GET | /analytics/agents | Per-agent stats (?dateRange) |
+| GET | /analytics/electricity-distribution | Electricity supply hours distribution |
+| GET | /analytics/wtp-distribution | Willingness to pay distribution |
+
+## Export
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /export/csv | Export surveys as CSV (?status, ?market, ?lga, ?energySource, ?dateRange) |
+| GET | /export/pdf | Export compressed PDF report (?quality=low\|medium\|high, ?status, ?market, ?lga, ?energySource, ?dateRange) |
+
+
+
+
+
+## Local Setup
+
+### Prerequisites
+- Node.js >= 18
+- MongoDB (local or Atlas URI)
+- DigitalOcean Spaces bucket
+
+### Steps
 
 ```bash
-$ npm install
+# 1. Clone the repository
+git clone https://github.com/your-username/survey-assessment.git
+cd survey-assessment
+
+# 2. Install dependencies
+npm install
+
+# 3. Copy environment file
+cp .env.example .env
+
+# 4. Fill in environment variables
+
+# 5. Seed the database
+npx ts-node src/seeds/run-all.ts
+
+# 6. Start the server
+npm run start:dev
 ```
 
-## Running the app
+Server runs on `http://localhost:3000`
 
-```bash
-# development
-$ npm run start
+### Default Login Credentials
 
-# watch mode
-$ npm run start:dev
+| Role  | Email              | Password     |
+|-------|--------------------|--------------|
+| Admin | admin@noemdek.com  | Password@123 |
+| Agent | agent1@noemdek.com | Password@123 |
+| Agent | agent2@noemdek.com | Password@123 |
 
-# production mode
-$ npm run start:prod
+---
+
+## Environment Variables
+
+```env
+# App
+PORT=3000
+NODE_ENV=development
+
+# MongoDB
+MONGODB_URI=mongodb://localhost:27017/survey_assessment
+
+# JWT
+JWT_SECRET=your_jwt_secret_here
+JWT_EXPIRES_IN=7d
+
+# DigitalOcean Spaces
+SPACES_KEY=your_spaces_key
+SPACES_SECRET=your_spaces_secret
+SPACES_BUCKET=your_bucket_name
+SPACES_REGION=fra1
+SPACES_ENDPOINT=https://fra1.digitaloceanspaces.com
+
+# LocationIQ
+LOCATIONIQ_API_KEY=your_locationiq_key
+LOCATIONIQ_BASE_URL=https://us1.locationiq.com/v1
 ```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
