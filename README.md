@@ -65,9 +65,9 @@ Server runs on `http://localhost:3000`
 
 | Role  | Email              | Password     |
 |-------|--------------------|--------------|
-| Admin | admin@noemdek.com  | Password@123 |
-| Agent | agent1@noemdek.com | Password@123 |
-| Agent | agent2@noemdek.com | Password@123 |
+| Admin | admin@socialandes.com  | Password@123 |
+| Agent | christopher.wilson@socialandes.com| MyStrongPassword1@ |
+| Agent | jessica.davis@socialandes.com| MyStrongPassword1@|
 
 ---
 
