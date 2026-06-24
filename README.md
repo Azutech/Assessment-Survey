@@ -1,14 +1,101 @@
 
 # Market Shop Survey Tool
 
+A full-stack backend system for collecting, managing, and analysing market shop energy data across Lagos, Ogun, and Oyo states.
+
+---
+
+## Table of Contents
+
+- [Tech Stack](#tech-stack)
+- [Local Setup](#local-setup)
+- [Environment Variables](#environment-variables)
+- [Database Schema](#database-schema)
+- [Seed Data](#seed-data)
+- [API Documentation](#api-documentation)
+- [PDF Compression Pipeline](#pdf-compression-pipeline)
+
+---
+
+## Tech Stack
+
+- **Runtime**: Node.js
+- **Framework**: NestJS (TypeScript)
+- **Database**: MongoDB (Mongoose)
+- **File Storage**: DigitalOcean Spaces (S3-compatible)
+- **Image Compression**: Sharp
+- **PDF Generation**: PDFKit
+- **Validation**: nestjs-zod + Zod v4
+- **Auth**: JWT (access token)
 
 
 
+## Local Setup
 
+### Prerequisites
+- Node.js >= 20
+- MongoDB (local or Atlas URI)
+- DigitalOcean Spaces bucket
 
+### Steps
 
+```bash
+# 1. Clone the repository
+git clone https://github.com/Azutech/Assessment-Survey.git
+cd survey-assessment
 
+# 2. Install dependencies
+npm install
 
+# 3. Copy environment file
+cp .env.example .env
+
+# 4. Fill in environment variables
+
+# 5. Seed the database
+# npx ts-node src/seeds/run-all.ts
+
+# 5. Start the server
+npm run start:dev
+```
+
+Server runs on `http://localhost:3000`
+
+### Default Login Credentials
+
+| Role  | Email              | Password     |
+|-------|--------------------|--------------|
+| Admin | admin@noemdek.com  | Password@123 |
+| Agent | agent1@noemdek.com | Password@123 |
+| Agent | agent2@noemdek.com | Password@123 |
+
+---
+
+## Environment Variables
+
+```env
+# App
+PORT=3000
+NODE_ENV=development
+
+# MongoDB
+MONGODB_URI=mongodb://localhost:27017/survey_assessment
+
+# JWT
+JWT_SECRET=your_jwt_secret_here
+JWT_EXPIRES_IN=7d
+
+# DigitalOcean Spaces
+SPACES_KEY=your_spaces_key
+SPACES_SECRET=your_spaces_secret
+SPACES_BUCKET=your_bucket_name
+SPACES_REGION=lon1
+SPACES_ENDPOINT=https://lon1.digitaloceanspaces.com
+
+# LocationIQ
+LOCATIONIQ_API_KEY=your_locationiq_key
+LOCATIONIQ_BASE_URL=https://us1.locationiq.com/v1
+```
 
 
 Base URL: `http://localhost:3026`
@@ -68,72 +155,3 @@ All endpoints require `Authorization: Bearer <token>` unless marked public.
 | GET | /export/pdf | Export compressed PDF report (?quality=low\|medium\|high, ?status, ?market, ?lga, ?energySource, ?dateRange) |
 
 
-
-
-
-## Local Setup
-
-### Prerequisites
-- Node.js >= 18
-- MongoDB (local or Atlas URI)
-- DigitalOcean Spaces bucket
-
-### Steps
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/your-username/survey-assessment.git
-cd survey-assessment
-
-# 2. Install dependencies
-npm install
-
-# 3. Copy environment file
-cp .env.example .env
-
-# 4. Fill in environment variables
-
-# 5. Seed the database
-npx ts-node src/seeds/run-all.ts
-
-# 6. Start the server
-npm run start:dev
-```
-
-Server runs on `http://localhost:3000`
-
-### Default Login Credentials
-
-| Role  | Email              | Password     |
-|-------|--------------------|--------------|
-| Admin | admin@noemdek.com  | Password@123 |
-| Agent | agent1@noemdek.com | Password@123 |
-| Agent | agent2@noemdek.com | Password@123 |
-
----
-
-## Environment Variables
-
-```env
-# App
-PORT=3000
-NODE_ENV=development
-
-# MongoDB
-MONGODB_URI=mongodb://localhost:27017/survey_assessment
-
-# JWT
-JWT_SECRET=your_jwt_secret_here
-JWT_EXPIRES_IN=7d
-
-# DigitalOcean Spaces
-SPACES_KEY=your_spaces_key
-SPACES_SECRET=your_spaces_secret
-SPACES_BUCKET=your_bucket_name
-SPACES_REGION=fra1
-SPACES_ENDPOINT=https://fra1.digitaloceanspaces.com
-
-# LocationIQ
-LOCATIONIQ_API_KEY=your_locationiq_key
-LOCATIONIQ_BASE_URL=https://us1.locationiq.com/v1
-```
