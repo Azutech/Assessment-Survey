@@ -1,5 +1,5 @@
 // export/helpers/compress-image.helper.ts
-import sharp from 'sharp';
+const sharp = require('sharp') 
 import axios from 'axios';
 
 export interface CompressedImage {
