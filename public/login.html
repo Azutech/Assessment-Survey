@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — Market Shop Survey</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f6fa;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .logo h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a1f36;
+    }
+
+    .logo p {
+      font-size: 13px;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #333;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus { border-color: #1a1f36; }
+
+    .error-msg {
+      color: #e74c3c;
+      font-size: 12px;
+      margin-top: 6px;
+      display: none;
+    }
+
+    .error-msg.show { display: block; }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 13px;
+      background: #1a1f36;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: opacity 0.2s;
+    }
+
+    button[type="submit"]:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      display: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<div class="login-card">
+  <div class="logo">
+    <h1>Market Shop Survey</h1>
+    <p>Sign in to continue</p>
+  </div>
+
+  <div class="form-group">
+    <label for="email">Email</label>
+    <input
+      type="email"
+      id="email"
+      placeholder="agent@noemdek.com"
+      autocomplete="email"
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input
+      type="password"
+      id="password"
+      placeholder="••••••••"
+      autocomplete="current-password"
+    />
+  </div>
+
+  <div class="error-msg" id="error-msg">Invalid email or password</div>
+
+  <button type="submit" id="login-btn" onclick="login()">
+    <span id="btn-text">Sign In</span>
+    <div class="spinner" id="spinner"></div>
+  </button>
+</div>
+
+<script>
+  // redirect if already logged in
+  (function () {
+    if (localStorage.getItem('token')) {
+      window.location.href = '/survey.html';
+    }
+  })();
+
+  // login on enter key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') login();
+  });
+
+  async function login() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    const errorEl = document.getElementById('error-msg');
+    const btn = document.getElementById('login-btn');
+    const btnText = document.getElementById('btn-text');
+    const spinner = document.getElementById('spinner');
+
+    // clear previous error
+    errorEl.classList.remove('show');
+
+    if (!email || !password) {
+      errorEl.textContent = 'Email and password are required';
+      errorEl.classList.add('show');
+      return;
+    }
+
+    // loading state
+    btn.disabled = true;
+    btnText.style.display = 'none';
+    spinner.style.display = 'block';
+
+    try {
+      const res = await fetch('/api/v1/agents/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const result = await res.json();
+
+      console.log('Login Response:', result);
+
+      if (!res.ok) {
+        errorEl.textContent =
+          result.error ||
+          result.message ||
+          result.msg ||
+          'Invalid email or password';
+
+        errorEl.classList.add('show');
+        return;
+      }
+
+      /**
+       * Backend Response:
+       * {
+       *   "msg": "Agent created successfully",
+       *   "agent": {
+       *     "auth": "jwt_token"
+       *   },
+       *   "message": "login successful ✅"
+       * }
+       */
+
+      if (!result?.agent?.auth) {
+        errorEl.textContent = 'Authentication token not found';
+        errorEl.classList.add('show');
+        return;
+      }
+
+      // save token
+      localStorage.setItem('token', result.agent.auth);
+
+      // optional
+      localStorage.setItem('isLoggedIn', 'true');
+
+      // redirect to survey page
+      window.location.href = '/survey.html';
+    } catch (error) {
+      console.error(error);
+
+      errorEl.textContent =
+        'Unable to connect to the server. Please try again.';
+      errorEl.classList.add('show');
+    } finally {
+      btn.disabled = false;
+      btnText.style.display = 'block';
+      spinner.style.display = 'none';
+    }
+  }
+</script>
+
+</body>
+</html>

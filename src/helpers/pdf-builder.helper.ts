@@ -64,7 +64,10 @@ export async function buildPDF(
   res.setHeader('Content-Type', 'application/pdf');
   res.setHeader('Content-Disposition', 'attachment; filename=report.pdf');
   res.setHeader('X-Original-Size-KB', Math.round(totalOriginalBytes / 1024));
-  res.setHeader('X-Compressed-Size-KB', Math.round(totalCompressedBytes / 1024));
+  res.setHeader(
+    'X-Compressed-Size-KB',
+    Math.round(totalCompressedBytes / 1024),
+  );
 
   // step 3 — create PDF and pipe directly to response
   // client starts receiving bytes as pages are written
@@ -116,20 +119,17 @@ export async function buildPDF(
   // ── SUMMARY STATISTICS ────────────────────────────────────────
   doc.addPage();
 
-  doc
-    .fontSize(16)
-    .font('Helvetica-Bold')
-    .text('Summary Statistics')
-    .moveDown();
+  doc.fontSize(16).font('Helvetica-Bold').text('Summary Statistics').moveDown();
 
-  const withGPS    = surveys.filter((s) => s.GPS).length;
+  const withGPS = surveys.filter((s) => s.GPS).length;
   const withPhotos = surveys.filter((s) => s.images?.shopExteriorImage).length;
-  const verified   = surveys.filter((s) => s.status === 'verified').length;
-  const pending    = surveys.filter((s) => s.status === 'pending').length;
+  const verified = surveys.filter((s) => s.status === 'verified').length;
+  const pending = surveys.filter((s) => s.status === 'pending').length;
   const unverified = surveys.filter((s) => s.status === 'unverified').length;
 
   const totalAppliances = surveys.reduce(
-    (acc, s) => acc + (s.appliances?.length ?? 0), 0,
+    (acc, s) => acc + (s.appliances?.length ?? 0),
+    0,
   );
   const avgAppliances = surveys.length
     ? (totalAppliances / surveys.length).toFixed(1)
@@ -221,11 +221,7 @@ export async function buildPDF(
   // ── PHOTO GALLERY ─────────────────────────────────────────────
   doc.addPage();
 
-  doc
-    .fontSize(16)
-    .font('Helvetica-Bold')
-    .text('Shop Photo Gallery')
-    .moveDown();
+  doc.fontSize(16).font('Helvetica-Bold').text('Shop Photo Gallery').moveDown();
 
   for (const { survey, image } of imageResults) {
     // new page if not enough space for image + label
@@ -240,15 +236,13 @@ export async function buildPDF(
       doc.image(image.buffer, x, y, { width: imgWidth });
     } else {
       // placeholder — pipeline must not error on missing images
-      doc
-        .rect(x, y, imgWidth, imgHeight)
-        .stroke();
+      doc.rect(x, y, imgWidth, imgHeight).stroke();
 
       doc
         .fontSize(9)
         .font('Helvetica')
         .fillColor('#aaaaaa')
-        .text('No photo available', x, y + (imgHeight / 2) - 6, {
+        .text('No photo available', x, y + imgHeight / 2 - 6, {
           width: imgWidth,
           align: 'center',
         })
@@ -271,9 +265,6 @@ export async function buildPDF(
   // step 4 — end document, stream flushes to client
   doc.end();
 }
-
-
-
 
 // // export/helpers/pdf-builder.helper.ts
 

@@ -6,6 +6,8 @@ import { HttpLogger } from './common/middleware/http-logger.middleware';
 import { NestExpressApplication } from '@nestjs/platform-express/interfaces/nest-express-application.interface';
 import { Logger } from '@nestjs/common/services/logger.service';
 import { ZodValidationPipe } from 'nestjs-zod';
+import * as express from 'express';
+import { join } from 'path';
 
 async function bootstrap() {
   const logger = new Logger('Assessment-Survey-V1');
@@ -15,6 +17,10 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   const port = configService.get<string>('PORT');
+
+
+  app.use(express.static(join(__dirname, '..', 'public')));
+
 
   app.setGlobalPrefix('api/v1');
   app.use(new HttpLogger().use);

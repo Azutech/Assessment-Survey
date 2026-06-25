@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Survey — Market Shop</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f6fa;
+      color: #333;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #1a1f36;
+      color: #fff;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 { font-size: 16px; font-weight: 600; }
+
+    header span { font-size: 12px; color: rgba(255,255,255,0.6); }
+
+    /* progress bar */
+    .progress-wrap {
+      background: #fff;
+      padding: 16px 20px;
+      border-bottom: 1px solid #eee;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .progress-steps {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .step-dot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .step-dot .dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #eee;
+      color: #aaa;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .step-dot.active .dot  { background: #1a1f36; color: #fff; }
+    .step-dot.done .dot    { background: #2ecc71; color: #fff; }
+
+    .step-dot .step-label {
+      font-size: 9px;
+      color: #aaa;
+      text-align: center;
+      display: none;
+    }
+
+    @media (min-width: 400px) {
+      .step-dot .step-label { display: block; }
+    }
+
+    .step-dot.active .step-label { color: #1a1f36; font-weight: 600; }
+    .step-dot.done .step-label   { color: #2ecc71; }
+
+    .progress-bar {
+      height: 3px;
+      background: #eee;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-bar .fill {
+      height: 100%;
+      background: #1a1f36;
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    /* form */
+    .form-container {
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .step { display: none; }
+    .step.active { display: block; }
+
+    .step-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1f36;
+      margin-bottom: 4px;
+    }
+
+    .step-subtitle {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 24px;
+    }
+
+    .form-group { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    label .required { color: #e74c3c; margin-left: 2px; }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #333;
+      background: #fff;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #1a1f36;
+    }
+
+    textarea { resize: vertical; min-height: 80px; }
+
+    .error {
+      color: #e74c3c;
+      font-size: 11px;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .error.show { display: block; }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* navigation */
+    .nav-btns {
+      display: flex;
+      gap: 12px;
+      margin-top: 32px;
+      padding-bottom: 40px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.2s;
+    }
+
+    .btn-primary { background: #1a1f36; color: #fff; }
+    .btn-secondary { background: #fff; color: #1a1f36; border: 1px solid #ddd; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .conditional { display: none; }
+    .conditional.show { display: block; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Market Shop Survey</h1>
+  <span id="agent-name"></span>
+</header>
+
+<!-- progress -->
+<div class="progress-wrap">
+  <div class="progress-steps">
+    <div class="step-dot active" id="dot-1">
+      <div class="dot">1</div>
+      <div class="step-label">Identity</div>
+    </div>
+    <div class="step-dot" id="dot-2">
+      <div class="dot">2</div>
+      <div class="step-label">Location</div>
+    </div>
+    <div class="step-dot" id="dot-3">
+      <div class="dot">3</div>
+      <div class="step-label">Energy</div>
+    </div>
+    <div class="step-dot" id="dot-4">
+      <div class="dot">4</div>
+      <div class="step-label">Appliances</div>
+    </div>
+    <div class="step-dot" id="dot-5">
+      <div class="dot">5</div>
+      <div class="step-label">Commercial</div>
+    </div>
+    <div class="step-dot" id="dot-6">
+      <div class="dot">6</div>
+      <div class="step-label">Media</div>
+    </div>
+  </div>
+  <div class="progress-bar">
+    <div class="fill" id="progress-fill" style="width:16.6%"></div>
+  </div>
+</div>
+
+<div class="form-container">
+
+  <!-- STEP 1: IDENTITY -->
+  <div class="step active" id="step-1">
+    <div class="step-title">Shop & Owner Identity</div>
+    <div class="step-subtitle">Basic information about the shop and owner</div>
+
+    <div class="form-group">
+      <label>Business Name <span class="required">*</span></label>
+      <input type="text" id="businessName" placeholder="e.g. Ade Electronics" />
+      <div class="error" id="err-businessName">Business name is required</div>
+    </div>
+
+    <div class="form-group">
+      <label>Business Type <span class="required">*</span></label>
+      <select id="businessType">
+        <option value="">Select business type</option>
+        <option>Electronics</option>
+        <option>Food & Beverages</option>
+        <option>Clothing & Textiles</option>
+        <option>Pharmacy & Health</option>
+        <option>Hardware & Building Materials</option>
+        <option>Furniture & Home Goods</option>
+        <option>Phones & Accessories</option>
+        <option>Cosmetics & Beauty</option>
+        <option>Stationery & Office Supplies</option>
+        <option>Automotive Parts</option>
+        <option>Agricultural Products</option>
+        <option>Spare Parts</option>
+        <option>Fabrics & Tailoring</option>
+        <option>Supermarket & Grocery</option>
+        <option>Restaurant & Food Stall</option>
+        <option>Printing & Branding</option>
+        <option>Jewellery & Accessories</option>
+        <option>Footwear</option>
+        <option>Books & Stationery</option>
+        <option>Sports & Fitness</option>
+        <option>Toys & Games</option>
+        <option>Electrical Supplies</option>
+        <option>Plumbing Supplies</option>
+        <option>Paint & Chemicals</option>
+        <option>Bags & Luggage</option>
+        <option>Plastics & Household Items</option>
+        <option>Meat & Fish</option>
+        <option>Fruits & Vegetables</option>
+        <option>Grains & Dry Foods</option>
+        <option>Beverages & Drinks</option>
+        <option>Ice & Cold Storage</option>
+        <option>Photography & Studio</option>
+        <option>Laundry & Dry Cleaning</option>
+        <option>Barbing & Salon</option>
+        <option>Cybercafe & Printing</option>
+        <option>Travel & Ticketing</option>
+        <option>Money Transfer & Finance</option>
+        <option>Generator & Solar Sales</option>
+        <option>Welding & Fabrication</option>
+        <option>Other</option>
+      </select>
+      <div class="error" id="err-businessType">Business type is required</div>
+    </div>
+
+    <div class="form-group">
+      <label>Owner/Operator Name <span class="required">*</span></label>
+      <input type="text" id="customerName" placeholder="e.g. Ade Johnson" />
+      <div class="error" id="err-customerName">Customer name is required</div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>Gender</label>
+        <select id="gender">
+          <option value="">Select</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Age Range <span class="required">*</span></label>
+        <select id="ageRange">
+          <option value="">Select</option>
+          <option>Under 18</option>
+          <option>18-25</option>
+          <option>26-35</option>
+          <option>36-45</option>
+          <option>46-55</option>
+          <option>Above 55</option>
+        </select>
+        <div class="error" id="err-ageRange">Age range is required</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Phone Number <span class="required">*</span></label>
+      <input type="tel" id="phoneNumber" placeholder="e.g. 08012345678" />
+      <div class="error" id="err-phoneNumber">Phone number is required</div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>Number of Employees</label>
+        <input type="number" id="numberOfEmployees" placeholder="0" min="0" />
+      </div>
+      <div class="form-group">
+        <label>Shop Status</label>
+        <select id="shopStatus">
+          <option value="">Select</option>
+          <option value="occupied">Occupied</option>
+          <option value="unoccupied">Unoccupied</option>
+          <option value="locked up">Locked Up</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-primary" onclick="nextStep()">Next →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: LOCATION -->
+  <div class="step" id="step-2">
+    <div class="step-title">Location & Market</div>
+    <div class="step-subtitle">Market and shop location details</div>
+
+    <div class="form-group">
+      <label>Market <span class="required">*</span></label>
+      <input type="text" id="market-search" placeholder="Search market..." oninput="searchMarkets(this.value)" autocomplete="off" />
+      <div id="market-dropdown" style="display:none; background:#fff; border:1px solid #ddd; border-radius:8px; margin-top:4px; max-height:200px; overflow-y:auto; box-shadow:0 4px 12px rgba(0,0,0,0.1)"></div>
+      <input type="hidden" id="marketName" />
+      <div class="error" id="err-marketName">Please select a market</div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>LGA</label>
+        <input type="text" id="marketLGA" readonly placeholder="Auto-filled" style="background:#f8f9fc; color:#888" />
+      </div>
+      <div class="form-group">
+        <label>State</label>
+        <input type="text" id="marketState" readonly placeholder="Auto-filled" style="background:#f8f9fc; color:#888" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Market Entity</label>
+      <input type="text" id="marketEntity" readonly placeholder="Auto-filled" style="background:#f8f9fc; color:#888" />
+    </div>
+
+    <div class="form-group">
+      <label>GPS Coordinates <span class="required">*</span></label>
+      <input type="text" id="GPS" readonly placeholder="Capturing location..." style="background:#f8f9fc" />
+      <div class="error" id="err-GPS">GPS is required — please enable location access</div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>Shop Block</label>
+        <input type="text" id="shopBlock" placeholder="e.g. Block A" />
+      </div>
+      <div class="form-group">
+        <label>Shop Number</label>
+        <input type="text" id="shopNumber" placeholder="e.g. #012" />
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep()">Next →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: ENERGY PROFILE -->
+  <div class="step" id="step-3">
+    <div class="step-title">Energy Profile</div>
+    <div class="step-subtitle">Shop energy usage and challenges</div>
+
+    <div class="form-group">
+      <label>Current Energy Source <span class="required">*</span></label>
+      <select id="currentEnergySource" onchange="toggleGeneratorFields()">
+        <option value="">Select</option>
+        <option value="petrol-generator">Petrol Generator</option>
+        <option value="diesel-generator">Diesel Generator</option>
+        <option value="grid-power">Grid Power</option>
+        <option value="solar-home-system">Solar Home System</option>
+        <option value="battery-lamp">Battery Lamp</option>
+        <option value="none">None</option>
+      </select>
+      <div class="error" id="err-currentEnergySource">Energy source is required</div>
+    </div>
+
+    <div class="conditional" id="generator-fields">
+      <div class="row">
+        <div class="form-group">
+          <label>Generator Ownership</label>
+          <select id="generatorOwnership">
+            <option value="">Select</option>
+            <option value="true">Owned</option>
+            <option value="false">Rented</option>
+          </select>
+          <div class="error" id="err-generatorOwnership">Required for generator source</div>
+        </div>
+        <div class="form-group">
+          <label>Generator Size <span class="required">*</span></label>
+          <input type="text" id="generatorSize" placeholder="e.g. 3.5KVA" />
+          <div class="error" id="err-generatorSize">Generator size is required</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Electricity Supply Hours <span class="required">*</span></label>
+      <select id="electricitySupply">
+        <option value="">Select hours per day</option>
+        <option value="0-2">0–2 hours</option>
+        <option value="2-5">2–5 hours</option>
+        <option value="5-10">5–10 hours</option>
+        <option value="10-12">10–12 hours</option>
+        <option value=">12">More than 12 hours</option>
+      </select>
+      <div class="error" id="err-electricitySupply">Electricity supply is required</div>
+    </div>
+
+    <div class="form-group">
+      <label>Energy Challenges (select up to 7)</label>
+      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:4px">
+        <label style="text-transform:none;font-weight:400;display:flex;align-items:center;gap:6px;font-size:13px">
+          <input type="checkbox" value="high-cost" onchange="limitChallenges(this)" /> High Cost
+        </label>
+        <label style="text-transform:none;font-weight:400;display:flex;align-items:center;gap:6px;font-size:13px">
+          <input type="checkbox" value="fuel-scarcity" onchange="limitChallenges(this)" /> Fuel Scarcity
+        </label>
+        <label style="text-transform:none;font-weight:400;display:flex;align-items:center;gap:6px;font-size:13px">
+          <input type="checkbox" value="maintenance" onchange="limitChallenges(this)" /> Maintenance
+        </label>
+        <label style="text-transform:none;font-weight:400;display:flex;align-items:center;gap:6px;font-size:13px">
+          <input type="checkbox" value="pollution" onchange="limitChallenges(this)" /> Pollution
+        </label>
+        <label style="text-transform:none;font-weight:400;display:flex;align-items:center;gap:6px;font-size:13px">
+          <input type="checkbox" value="other" onchange="limitChallenges(this)" /> Other
+        </label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Collection Frequency</label>
+      <input type="text" id="collectionFrequency" placeholder="e.g. Weekly" />
+    </div>
+
+    <div class="form-group">
+      <label>Load Profile</label>
+      <input type="text" id="loadProfile" placeholder="e.g. Medium" />
+    </div>
+
+    <div class="form-group">
+      <label>Estimated Future Load</label>
+      <input type="text" id="estimatedFutureLoad" placeholder="e.g. High" />
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep()">Next →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: APPLIANCES -->
+  <div class="step" id="step-4">
+    <div class="step-title">Appliances</div>
+    <div class="step-subtitle">Add up to 14 appliances used in the shop</div>
+
+    <div id="appliances-list"></div>
+
+    <button
+      type="button"
+      onclick="addAppliance()"
+      style="width:100%;padding:12px;border:2px dashed #ddd;border-radius:8px;background:transparent;color:#888;font-size:13px;cursor:pointer;margin-bottom:16px"
+      id="add-appliance-btn">
+      + Add Appliance
+    </button>
+
+    <div class="nav-btns">
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep()">Next →</button>
+    </div>
+  </div>
+
+  <!-- STEP 5: COMMERCIAL & CONSENT -->
+  <div class="step" id="step-5">
+    <div class="step-title">Commercial & Consent</div>
+    <div class="step-subtitle">Payment preferences and consent</div>
+
+    <div class="form-group">
+      <label>Willingness to Pay</label>
+      <select id="willingnessToPay">
+        <option value="">Select range</option>
+        <option>Under 5,000</option>
+        <option>5,000-10,000</option>
+        <option>10,000-20,000</option>
+        <option>20,000-50,000</option>
+        <option>Above 50,000</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Payment Preference</label>
+      <select id="paymentPreference">
+        <option value="">Select</option>
+        <option value="prepaid-card">Prepaid Card</option>
+        <option value="monthly-subscription">Monthly Subscription</option>
+        <option value="bank-transfer">Bank Transfer</option>
+        <option value="mobile-money">Mobile Money</option>
+        <option value="pay-as-you-go">Pay As You Go</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Appliance Used</label>
+      <select id="applianceUsed">
+        <option value="">Select</option>
+        <option value="Light">Light</option>
+        <option value="Medium sized">Medium Sized</option>
+        <option value="Heavy appliances">Heavy Appliances</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Additional Comments</label>
+      <textarea id="additionalComments" placeholder="Any additional information..."></textarea>
+    </div>
+
+    <div class="form-group" style="display:flex;align-items:flex-start;gap:10px;margin-top:8px">
+      <input
+        type="checkbox"
+        id="consent"
+        style="width:18px;height:18px;margin-top:2px;flex-shrink:0"
+        onchange="toggleSubmitBtn()"
+      />
+      <label for="consent" style="text-transform:none;font-weight:400;font-size:13px;color:#444;letter-spacing:0">
+        I consent to the collection and use of this data for energy access research purposes.
+      </label>
+    </div>
+    <div class="error" id="err-consent">You must provide consent to continue</div>
+
+    <div class="nav-btns">
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep()">Next →</button>
+    </div>
+  </div>
+
+  <!-- STEP 6: MEDIA -->
+  <div class="step" id="step-6">
+    <div class="step-title">Media & Signature</div>
+    <div class="step-subtitle">Upload photos and sign</div>
+
+    <div class="form-group">
+      <label>Exterior Photo <span class="required">*</span></label>
+      <input type="file" id="shopExteriorImage" accept="image/*" onchange="handleImageUpload(this, 'shopExteriorImage', 'exterior-preview')" />
+      <div class="error" id="err-shopExteriorImage">Exterior photo is required</div>
+      <img id="exterior-preview" style="display:none;max-width:100%;margin-top:8px;border-radius:8px;border:1px solid #eee" />
+    </div>
+
+    <div class="form-group">
+      <label>Interior Photo 1 (optional)</label>
+      <input type="file" id="shopInteriorImage1" accept="image/*" onchange="handleImageUpload(this, 'shopInteriorImage1', 'interior-preview-1')" />
+      <img id="interior-preview-1" style="display:none;max-width:100%;margin-top:8px;border-radius:8px;border:1px solid #eee" />
+    </div>
+
+    <div class="form-group">
+      <label>Interior Photo 2 (optional)</label>
+      <input type="file" id="shopInteriorImage2" accept="image/*" onchange="handleImageUpload(this, 'shopInteriorImage2', 'interior-preview-2')" />
+      <img id="interior-preview-2" style="display:none;max-width:100%;margin-top:8px;border-radius:8px;border:1px solid #eee" />
+    </div>
+
+    <div class="form-group">
+      <label>Interior Photo 3 (optional)</label>
+      <input type="file" id="shopInteriorImage3" accept="image/*" onchange="handleImageUpload(this, 'shopInteriorImage3', 'interior-preview-3')" />
+      <img id="interior-preview-3" style="display:none;max-width:100%;margin-top:8px;border-radius:8px;border:1px solid #eee" />
+    </div>
+
+    <div class="form-group">
+      <label>Signature <span class="required">*</span></label>
+      <canvas
+        id="signature-pad"
+        width="100%"
+        height="150"
+        style="border:1px solid #ddd;border-radius:8px;width:100%;touch-action:none;background:#fff"
+      ></canvas>
+      <button
+        type="button"
+        onclick="clearSignature()"
+        style="margin-top:6px;padding:6px 14px;border:1px solid #ddd;border-radius:6px;background:#fff;font-size:12px;cursor:pointer;color:#666"
+      >
+        Clear Signature
+      </button>
+      <div class="error" id="err-signature">Signature is required</div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn btn-primary" id="submit-btn" onclick="submitSurvey()">Submit Survey</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ── AUTH GUARD ───────────────────────────────────────────────
+  (function() {
+    if (!localStorage.getItem('token')) window.location.href = '/login.html';
+    document.getElementById('agent-name').textContent = localStorage.getItem('agentName') ?? '';
+  })();
+
+  // ── STATE ────────────────────────────────────────────────────
+  let currentStep = 1;
+  const totalSteps = 6;
+  const startTime = new Date().toISOString();
+  const formData = {
+    images: {
+      shopExteriorImage: null,
+      shopInteriorImage1: null,
+      shopInteriorImage2: null,
+      shopInteriorImage3: null,
+    }
+  };
+
+  // ── API HELPER ───────────────────────────────────────────────
+  async function apiFetch(url, options = {}) {
+    const token = localStorage.getItem('token');
+    const res = await fetch(url, {
+      ...options,
+      headers: {
+        ...options.headers,
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (res.status === 401) {
+      localStorage.clear();
+      window.location.href = '/login.html';
+      return null;
+    }
+    return res;
+  }
+
+  // ── GPS ──────────────────────────────────────────────────────
+  window.addEventListener('DOMContentLoaded', () => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const gps = `${pos.coords.latitude} ${pos.coords.longitude}`;
+        document.getElementById('GPS').value = gps;
+        document.getElementById('err-GPS').classList.remove('show');
+      },
+      () => {
+        document.getElementById('err-GPS').textContent = 'Location access denied — GPS is required';
+        document.getElementById('err-GPS').classList.add('show');
+      }
+    );
+
+    initSignaturePad();
+    addAppliance(); // start with one appliance row
+  });
+
+  // ── PROGRESS ─────────────────────────────────────────────────
+  function updateProgress() {
+    for (let i = 1; i <= totalSteps; i++) {
+      const dot = document.getElementById(`dot-${i}`);
+      dot.classList.remove('active', 'done');
+      if (i === currentStep) dot.classList.add('active');
+      if (i < currentStep) dot.classList.add('done');
+    }
+    const pct = (currentStep / totalSteps) * 100;
+    document.getElementById('progress-fill').style.width = `${pct}%`;
+  }
+
+  function showStep(n) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById(`step-${n}`).classList.add('active');
+    window.scrollTo(0, 0);
+    updateProgress();
+  }
+
+  // ── VALIDATION ───────────────────────────────────────────────
+  function clearErrors() {
+    document.querySelectorAll('.error').forEach(e => e.classList.remove('show'));
+  }
+
+  function showError(id, msg) {
+    const el = document.getElementById(`err-${id}`);
+    if (el) {
+      if (msg) el.textContent = msg;
+      el.classList.add('show');
+    }
+  }
+
+  function validateStep() {
+    clearErrors();
+    let valid = true;
+
+    if (currentStep === 1) {
+      if (!document.getElementById('businessName').value.trim()) { showError('businessName'); valid = false; }
+      if (!document.getElementById('businessType').value)        { showError('businessType'); valid = false; }
+      if (!document.getElementById('customerName').value.trim()) { showError('customerName'); valid = false; }
+      if (!document.getElementById('ageRange').value)            { showError('ageRange'); valid = false; }
+      if (!document.getElementById('phoneNumber').value.trim())  { showError('phoneNumber'); valid = false; }
+    }
+
+    if (currentStep === 2) {
+      if (!document.getElementById('marketName').value) { showError('marketName', 'Please select a market'); valid = false; }
+      if (!document.getElementById('GPS').value)        { showError('GPS', 'GPS is required — please enable location access'); valid = false; }
+    }
+
+    if (currentStep === 3) {
+      const source = document.getElementById('currentEnergySource').value;
+      if (!source) { showError('currentEnergySource'); valid = false; }
+
+      const isGenerator = ['petrol-generator', 'diesel-generator'].includes(source);
+      if (isGenerator) {
+        if (!document.getElementById('generatorSize').value.trim()) { showError('generatorSize'); valid = false; }
+        if (!document.getElementById('generatorOwnership').value)   { showError('generatorOwnership'); valid = false; }
+      }
+
+      if (!document.getElementById('electricitySupply').value) { showError('electricitySupply'); valid = false; }
+    }
+
+    if (currentStep === 5) {
+      if (!document.getElementById('consent').checked) { showError('consent'); valid = false; }
+    }
+
+    if (currentStep === 6) {
+      if (!formData.images.shopExteriorImage) { showError('shopExteriorImage', 'Exterior photo is required'); valid = false; }
+      if (!formData.signature)                { showError('signature', 'Signature is required'); valid = false; }
+    }
+
+    return valid;
+  }
+
+  function nextStep() {
+    if (!validateStep()) return;
+    if (currentStep < totalSteps) {
+      currentStep++;
+      showStep(currentStep);
+    }
+  }
+
+  function prevStep() {
+    if (currentStep > 1) {
+      currentStep--;
+      showStep(currentStep);
+    }
+  }
+
+  // ── MARKET SEARCH ────────────────────────────────────────────
+  let marketTimeout;
+  async function searchMarkets(query) {
+    clearTimeout(marketTimeout);
+    const dropdown = document.getElementById('market-dropdown');
+
+    if (!query.trim()) { dropdown.style.display = 'none'; return; }
+
+    marketTimeout = setTimeout(async () => {
+      const res = await apiFetch(`/markets?search=${encodeURIComponent(query)}`);
+      if (!res) return;
+      const { data } = await res.json();
+
+      if (!data.length) { dropdown.style.display = 'none'; return; }
+
+      dropdown.style.display = 'block';
+      dropdown.innerHTML = data.map(m => `
+        <div
+          onclick="selectMarket('${m._id}', '${m.marketName}', '${m.LGA}', '${m.marketState}', '${m.marketEntity ?? ''}')"
+          style="padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid #f0f0f0"
+          onmouseover="this.style.background='#f8f9fc'"
+          onmouseout="this.style.background='#fff'"
+        >
+          <strong>${m.marketName}</strong>
+          <span style="color:#888;font-size:11px"> · ${m.LGA}, ${m.marketState}</span>
+        </div>
+      `).join('');
+    }, 300);
+  }
+
+  function selectMarket(id, name, lga, state, entity) {
+    document.getElementById('marketName').value  = id;
+    document.getElementById('market-search').value = name;
+    document.getElementById('marketLGA').value   = lga;
+    document.getElementById('marketState').value = state;
+    document.getElementById('marketEntity').value = entity;
+    document.getElementById('market-dropdown').style.display = 'none';
+    document.getElementById('err-marketName').classList.remove('show');
+  }
+
+  // close dropdown on outside click
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#market-search') && !e.target.closest('#market-dropdown')) {
+      document.getElementById('market-dropdown').style.display = 'none';
+    }
+  });
+
+  // ── GENERATOR FIELDS ─────────────────────────────────────────
+  function toggleGeneratorFields() {
+    const source = document.getElementById('currentEnergySource').value;
+    const isGenerator = ['petrol-generator', 'diesel-generator'].includes(source);
+    document.getElementById('generator-fields').classList.toggle('show', isGenerator);
+  }
+
+  // ── ENERGY CHALLENGES ────────────────────────────────────────
+  function limitChallenges(cb) {
+    const checked = document.querySelectorAll('input[type="checkbox"]:checked');
+    if (checked.length > 7) { cb.checked = false; }
+  }
+
+  // ── APPLIANCES ───────────────────────────────────────────────
+  let applianceCount = 0;
+
+  function addAppliance() {
+    if (applianceCount >= 14) return;
+    applianceCount++;
+    const idx = applianceCount - 1;
+
+    const row = document.createElement('div');
+    row.id = `appliance-row-${idx}`;
+    row.style.cssText = 'background:#fff;border:1px solid #eee;border-radius:8px;padding:14px;margin-bottom:10px';
+
+    row.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span style="font-size:12px;font-weight:600;color:#888;text-transform:uppercase">Appliance ${applianceCount}</span>
+        <button type="button" onclick="removeAppliance(${idx})" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:13px">Remove</button>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px">
+        <div>
+          <label style="font-size:11px;color:#888;display:block;margin-bottom:4px">NAME</label>
+          <input type="text" id="a-name-${idx}" placeholder="e.g. Fan" style="padding:8px;font-size:13px;width:100%;border:1px solid #ddd;border-radius:6px" />
+        </div>
+        <div>
+          <label style="font-size:11px;color:#888;display:block;margin-bottom:4px">QTY</label>
+          <input type="number" id="a-qty-${idx}" min="1" placeholder="1" oninput="computeTotal(${idx})" style="padding:8px;font-size:13px;width:100%;border:1px solid #ddd;border-radius:6px" />
+        </div>
+        <div>
+          <label style="font-size:11px;color:#888;display:block;margin-bottom:4px">HRS/DAY</label>
+          <input type="number" id="a-hrs-${idx}" min="0" max="24" placeholder="8" oninput="computeTotal(${idx})" style="padding:8px;font-size:13px;width:100%;border:1px solid #ddd;border-radius:6px" />
+        </div>
+        <div>
+          <label style="font-size:11px;color:#888;display:block;margin-bottom:4px">WATTS</label>
+          <input type="number" id="a-watts-${idx}" min="1" placeholder="75" oninput="computeTotal(${idx})" style="padding:8px;font-size:13px;width:100%;border:1px solid #ddd;border-radius:6px" />
+        </div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#888">
+        Total: <strong id="a-total-${idx}">0</strong> Wh/day
+      </div>
+    `;
+
+    document.getElementById('appliances-list').appendChild(row);
+
+    if (applianceCount >= 14) {
+      document.getElementById('add-appliance-btn').style.display = 'none';
+    }
+  }
+
+  function removeAppliance(idx) {
+    const row = document.getElementById(`appliance-row-${idx}`);
+    if (row) row.remove();
+    applianceCount--;
+    document.getElementById('add-appliance-btn').style.display = 'block';
+  }
+
+  function computeTotal(idx) {
+    const qty   = Number(document.getElementById(`a-qty-${idx}`)?.value) || 0;
+    const hrs   = Number(document.getElementById(`a-hrs-${idx}`)?.value) || 0;
+    const watts = Number(document.getElementById(`a-watts-${idx}`)?.value) || 0;
+    const total = qty * hrs * watts;
+    const el = document.getElementById(`a-total-${idx}`);
+    if (el) el.textContent = total;
+  }
+
+  function getAppliances() {
+    const rows = document.querySelectorAll('[id^="appliance-row-"]');
+    const result = [];
+    rows.forEach((row) => {
+      const idx = row.id.split('-').pop();
+      const name  = document.getElementById(`a-name-${idx}`)?.value?.trim();
+      const qty   = Number(document.getElementById(`a-qty-${idx}`)?.value);
+      const hrs   = Number(document.getElementById(`a-hrs-${idx}`)?.value);
+      const watts = Number(document.getElementById(`a-watts-${idx}`)?.value);
+      if (name && qty > 0) {
+        result.push({ name, quantity: qty, hoursPerDay: hrs, watts });
+      }
+    });
+    return result;
+  }
+
+  // ── IMAGE UPLOAD ─────────────────────────────────────────────
+  async function handleImageUpload(input, field, previewId) {
+    const file = input.files[0];
+    if (!file) return;
+
+    // preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = document.getElementById(previewId);
+      img.src = e.target.result;
+      img.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+
+    // upload immediately
+    const fd = new FormData();
+    fd.append('file', file);
+
+    try {
+      const res = await apiFetch('/uploads', { method: 'POST', body: fd });
+      if (!res) return;
+      const { data } = await res.json();
+      formData.images[field] = data.url;
+
+      if (field === 'shopExteriorImage') {
+        document.getElementById('err-shopExteriorImage').classList.remove('show');
+      }
+    } catch {
+      alert('Image upload failed. Please try again.');
+    }
+  }
+
+  // ── SIGNATURE PAD ────────────────────────────────────────────
+  function initSignaturePad() {
+    const canvas = document.getElementById('signature-pad');
+    const ctx = canvas.getContext('2d');
+
+    // set actual pixel size
+    canvas.width  = canvas.offsetWidth;
+    canvas.height = 150;
+
+    ctx.strokeStyle = '#1a1f36';
+    ctx.lineWidth   = 2;
+    ctx.lineCap     = 'round';
+
+    let drawing = false;
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const src  = e.touches ? e.touches[0] : e;
+      return {
+        x: src.clientX - rect.left,
+        y: src.clientY - rect.top,
+      };
+    }
+
+    function start(e) {
+      e.preventDefault();
+      drawing = true;
+      const { x, y } = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
+
+    function draw(e) {
+      e.preventDefault();
+      if (!drawing) return;
+      const { x, y } = getPos(e);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    }
+
+    function stop(e) {
+      e.preventDefault();
+      drawing = false;
+      formData.signature = canvas.toDataURL('image/png');
+      document.getElementById('err-signature').classList.remove('show');
+    }
+
+    canvas.addEventListener('mousedown', start);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stop);
+    canvas.addEventListener('touchstart', start, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', stop, { passive: false });
+  }
+
+  function clearSignature() {
+    const canvas = document.getElementById('signature-pad');
+    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+    formData.signature = null;
+  }
+
+  // ── CONSENT ──────────────────────────────────────────────────
+  function toggleSubmitBtn() {
+    // consent handled in validation
+  }
+
+  // ── SUBMIT ───────────────────────────────────────────────────
+  async function submitSurvey() {
+    if (!validateStep()) return;
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+
+    const energyChallenges = Array.from(
+      document.querySelectorAll('input[type="checkbox"]:checked')
+    ).map(cb => cb.value);
+
+    const payload = {
+      // step 1
+      businessName:      document.getElementById('businessName').value.trim(),
+      businessType:      document.getElementById('businessType').value,
+      customerName:      document.getElementById('customerName').value.trim(),
+      gender:            document.getElementById('gender').value || undefined,
+      phoneNumber:       document.getElementById('phoneNumber').value.trim(),
+      ageRange:          document.getElementById('ageRange').value,
+      numberOfEmployees: document.getElementById('numberOfEmployees').value || undefined,
+      shopStatus:        document.getElementById('shopStatus').value || undefined,
+
+      // step 2
+      marketName:  document.getElementById('marketName').value,
+      GPS:         document.getElementById('GPS').value,
+      shopBlock:   document.getElementById('shopBlock').value.trim() || undefined,
+      shopNumber:  document.getElementById('shopNumber').value.trim() || undefined,
+
+      // step 3
+      currentEnergySource: document.getElementById('currentEnergySource').value,
+      generatorOwnership:  document.getElementById('generatorOwnership').value === 'true' ? true
+                         : document.getElementById('generatorOwnership').value === 'false' ? false
+                         : undefined,
+      generatorSize:       document.getElementById('generatorSize').value.trim() || undefined,
+      electricitySupply:   document.getElementById('electricitySupply').value,
+      energyChallenges,
+      collectionFrequency: document.getElementById('collectionFrequency').value.trim() || undefined,
+      loadProfile:         document.getElementById('loadProfile').value.trim() || undefined,
+      estimatedFutureLoad: document.getElementById('estimatedFutureLoad').value.trim() || undefined,
+
+      // step 4
+      appliances: getAppliances(),
+
+      // step 5
+      willingnessToPay:    document.getElementById('willingnessToPay').value || undefined,
+      paymentPreference:   document.getElementById('paymentPreference').value || undefined,
+      applianceUsed:       document.getElementById('applianceUsed').value || undefined,
+      additionalComments:  document.getElementById('additionalComments').value.trim() || undefined,
+      consent:             document.getElementById('consent').checked,
+
+      // step 6
+      signature: formData.signature,
+      images:    formData.images,
+
+      // timing
+      startTime,
+      endTime: new Date().toISOString(),
+    };
+
+    try {
+      const res = await apiFetch('/surveys', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res) return;
+      const result = await res.json();
+
+      if (!res.ok || !result.success) {
+        alert(result.error ?? result.message ?? 'Submission failed. Please try again.');
+        return;
+      }
+
+      window.location.href = '/success.html';
+    } catch {
+      alert('Something went wrong. Please try again.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Submit Survey';
+    }
+  }
+</script>
+
+</body>
+</html>
