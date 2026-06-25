@@ -537,17 +537,12 @@ export class SurveyRepository {
           );
         }
 
+        // include entire end day
+        toDate.setUTCHours(23, 59, 59, 999);
+
         matchStage.createdAt = {
           $gte: fromDate,
           $lte: toDate,
-        };
-      } else if (from) {
-        matchStage.createdAt = {
-          $gte: new Date(from),
-        };
-      } else if (to) {
-        matchStage.createdAt = {
-          $lte: new Date(to),
         };
       }
 
@@ -647,19 +642,20 @@ export class SurveyRepository {
           );
         }
 
+        // include entire end day
+        toDate.setUTCHours(23, 59, 59, 999);
+
         matchStage.createdAt = {
           $gte: fromDate,
           $lte: toDate,
         };
-      } else if (from) {
-        matchStage.createdAt = {
-          $gte: new Date(from),
-        };
-      } else if (to) {
-        matchStage.createdAt = {
-          $lte: new Date(to),
-        };
       }
+
+      console.log('MATCH STAGE', JSON.stringify(matchStage, null, 2));
+
+      const count = await this.surveyModel.countDocuments(matchStage);
+
+      console.log('MATCHED DOCS', count);
 
       const [summary, energyBreakdown] = await Promise.all([
         this.surveyModel.aggregate([
@@ -794,17 +790,12 @@ export class SurveyRepository {
           );
         }
 
+        // include entire end day
+        toDate.setUTCHours(23, 59, 59, 999);
+
         matchStage.createdAt = {
           $gte: fromDate,
           $lte: toDate,
-        };
-      } else if (from) {
-        matchStage.createdAt = {
-          $gte: new Date(from),
-        };
-      } else if (to) {
-        matchStage.createdAt = {
-          $lte: new Date(to),
         };
       }
 
