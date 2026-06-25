@@ -9,8 +9,8 @@ export class AnalyticsController {
   @Get('marketAnalytics')
   async marketAnalysis(
     @Res() res: Response,
-    @Query('from') from : string,
-    @Query('to') to : string
+    @Query('from') from: string,
+    @Query('to') to: string,
   ) {
     const analysis = await this.analyticsService.marketAnalytics(from, to);
 
@@ -22,9 +22,10 @@ export class AnalyticsController {
   @Get('summaryAnalytics')
   async summaryAnalytics(
     @Res() res: Response,
-    @Query('dateRange') dateRange: string,
+    @Query('from') from: string,
+    @Query('to') to: string,
   ) {
-    const analysis = await this.analyticsService.summaryAnalytics();
+    const analysis = await this.analyticsService.summaryAnalytics(from, to);
 
     return res
       .status(HttpStatus.OK)
@@ -33,9 +34,10 @@ export class AnalyticsController {
   @Get('agentAnalytics')
   async getAgentAnalytics(
     @Res() res: Response,
-    @Query('dateRange') dateRange: string,
+    @Query('from') from: string,
+    @Query('to') to: string,
   ) {
-    const analysis = await this.analyticsService.getAgentAnalytics();
+    const analysis = await this.analyticsService.getAgentAnalytics(from, to);
 
     return res
       .status(HttpStatus.OK)

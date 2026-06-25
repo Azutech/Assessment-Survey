@@ -18,9 +18,7 @@ async function bootstrap() {
 
   const port = configService.get<string>('PORT');
 
-
   app.use(express.static(join(__dirname, '..', 'public')));
-
 
   app.setGlobalPrefix('api/v1');
   app.use(new HttpLogger().use);
