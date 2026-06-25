@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { parse, isValid, startOfDay, endOfDay, isAfter } from 'date-fns';
 import { SurveyDocument, Survey } from '../entity/survey.entity';
@@ -523,17 +523,44 @@ export class SurveyRepository {
       throw error;
     }
   }
-  async getMarketAnalytics(dateRange?: string) {
+  async getMarketAnalytics(from?: string, to?: string) {
     try {
-      const matchStage: Record<string, any> = {};
+      // const matchStage: Record<string, any> = {};
 
-      if (dateRange) {
-        const [from, to] = dateRange.split(',');
-        matchStage.createdAt = {
-          $gte: new Date(from),
-          $lte: new Date(to),
-        };
+      // if (dateRange) {
+      //   const [from, to] = dateRange.split(',');
+      //   matchStage.createdAt = {
+      //     $gte: new Date(from),
+      //     $lte: new Date(to),
+      //   };
+      // }
+
+
+          const matchStage: Record<string, any> = {};
+
+    if (from && to) {
+      const fromDate = new Date(from);
+      const toDate = new Date(to);
+
+      if (toDate < fromDate) {
+        throw new BadRequestException(
+          '`to` date cannot be earlier than `from` date',
+        );
       }
+
+      matchStage.createdAt = {
+        $gte: fromDate,
+        $lte: toDate,
+      };
+    } else if (from) {
+      matchStage.createdAt = {
+        $gte: new Date(from),
+      };
+    } else if (to) {
+      matchStage.createdAt = {
+        $lte: new Date(to),
+      };
+    }
 
       const data = await this.surveyModel.aggregate([
         { $match: matchStage },

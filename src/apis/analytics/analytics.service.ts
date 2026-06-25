@@ -5,9 +5,9 @@ import { SurveyRepository } from '../surveys/repository/survey.repository';
 export class AnalyticsService {
   constructor(private readonly surveyRepository: SurveyRepository) {}
 
-  async marketAnalytics(dateRange?: string): Promise<any> {
+  async marketAnalytics(from?: string, to?: string): Promise<any> {
     const marketAnalysis =
-      await this.surveyRepository.getMarketAnalytics(dateRange);
+      await this.surveyRepository.getMarketAnalytics(from, to);
 
     return marketAnalysis;
   }

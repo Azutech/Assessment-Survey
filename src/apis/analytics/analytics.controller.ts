@@ -9,9 +9,10 @@ export class AnalyticsController {
   @Get('marketAnalytics')
   async marketAnalysis(
     @Res() res: Response,
-    @Query('dateRange') dateRange: string,
+    @Query('from') from : string,
+    @Query('to') to : string
   ) {
-    const analysis = await this.analyticsService.marketAnalytics(dateRange);
+    const analysis = await this.analyticsService.marketAnalytics(from, to);
 
     return res
       .status(HttpStatus.OK)
