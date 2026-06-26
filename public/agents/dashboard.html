@@ -328,11 +328,7 @@ async function loadAgent() {
       }
     );
 
-    console.log("STATUS", response.status);
-
     const result = await response.json();
-
-    console.log("AGENT RESPONSE", result);
 
     const agent = result.agent;
 
