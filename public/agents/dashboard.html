@@ -317,6 +317,7 @@ if (!auth.token) {
 
 async function loadAgent() {
   try {
+    console.log("TOKEN", auth.token);
 
     const response = await fetch(
       "/api/v1/agents/agentDashboard",
@@ -327,7 +328,11 @@ async function loadAgent() {
       }
     );
 
+    console.log("STATUS", response.status);
+
     const result = await response.json();
+
+    console.log("AGENT RESPONSE", result);
 
     const agent = result.agent;
 
@@ -344,19 +349,16 @@ async function loadAgent() {
       agent.status;
 
     document.getElementById("totalResponses").textContent =
-      agent.totalResponse || 0;
+      agent.totalResponse;
 
     document.getElementById("lastLocation").textContent =
       agent.lastLocation || "-";
 
     document.getElementById("lastActive").textContent =
-      agent.lastActiveTime
-      ? new Date(agent.lastActiveTime)
-          .toLocaleString()
-      : "-";
+      new Date(agent.lastActiveTime).toLocaleString();
 
   } catch (error) {
-    console.error(error);
+    console.error("LOAD AGENT ERROR", error);
   }
 }
 

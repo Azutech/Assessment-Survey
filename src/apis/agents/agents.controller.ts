@@ -43,7 +43,7 @@ export class AgentsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('agentDashbord')
+  @Get('agentDashboard')
   async viewDashboard(
     @Req() req: any,
     @Res() res: Response,
