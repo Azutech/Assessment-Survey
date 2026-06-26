@@ -112,4 +112,51 @@ export class SurveysController {
       .status(HttpStatus.OK)
       .json({ msg: 'Customers retrieved successfully', customers });
   }
+  
+  
+  @UseGuards(JwtAuthGuard)
+  @Get('viewAllCustomersAgents')
+  async agentsCustomers(
+    @Req() req: any,
+    @Res() res: Response,
+    @Query('search') search?: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('agentDetails') agentDetails?: string,
+    @Query('marketLGA') marketLGA?: string,
+    @Query('marketState') marketState?: string,
+    @Query('marketName') marketName?: string,
+    @Query('currentEnergySource') currentEnergySource?: string,
+    @Query('LGA_Eligibility', OptionalBoolPipe) LGA_Eligibility?: boolean,
+    @Query('hasPictures', OptionalBoolPipe) hasPictures?: boolean,
+    @Query('status') status?: string | string[],
+    @Query('gpsFilter') gpsFilter?: 'withGPS' | 'withoutGPS',
+    @Query('dateRange') dateRange?: string,
+    @Query('date') date?: string,
+    @Query('marketEntity') marketEntity?: string,
+  ) {
+
+    const id = req.user.userId
+    const customers = await this.surveysService.viewAllCustomersAgents(
+      id,
+      search,
+      marketLGA,
+      marketEntity,
+      marketState,
+      LGA_Eligibility,
+      hasPictures,
+      currentEnergySource,
+      agentDetails,
+      marketName,
+      status,
+      gpsFilter,
+      dateRange,
+      Number(page),
+      Number(limit),
+    );
+
+    return res
+      .status(HttpStatus.OK)
+      .json({ msg: 'Customers retrieved successfully', customers });
+  }
 }
