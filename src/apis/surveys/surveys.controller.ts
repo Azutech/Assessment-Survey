@@ -112,8 +112,7 @@ export class SurveysController {
       .status(HttpStatus.OK)
       .json({ msg: 'Customers retrieved successfully', customers });
   }
-  
-  
+
   @UseGuards(JwtAuthGuard)
   @Get('viewAllCustomersAgents')
   async agentsCustomers(
@@ -135,8 +134,7 @@ export class SurveysController {
     @Query('date') date?: string,
     @Query('marketEntity') marketEntity?: string,
   ) {
-
-    const id = req.user.userId
+    const id = req.user.userId;
     const customers = await this.surveysService.viewAllCustomersAgents(
       id,
       search,

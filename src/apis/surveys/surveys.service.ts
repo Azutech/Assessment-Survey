@@ -224,7 +224,7 @@ export class SurveysService {
     };
   }
   async viewAllCustomersAgents(
-    agentId:string,
+    agentId: string,
     search?: string,
     marketLGA?: string,
     marketEntity?: string,
@@ -239,20 +239,18 @@ export class SurveysService {
     dateRange?: string,
     page = 1,
     limit = 50,
-  
   ) {
     const cleanAgentDetails = agentDetails?.trim();
     const hasAgentFilter = cleanAgentDetails && cleanAgentDetails.length > 0;
 
-
-    const agent = await this.agentRepository.findOne({_id : agentId})
+    const agent = await this.agentRepository.findOne({ _id: agentId });
 
     if (!agent) {
-      throw new NotFoundException('Agent not found')
+      throw new NotFoundException('Agent not found');
     }
 
     const { data, total } = await this.surveyRepository.findAllCustomerIndex(
-      {},
+      { agentId: agentId },
       LGA_Eligibility,
       hasPictures,
       marketEntity,
