@@ -121,7 +121,8 @@ export class ExportService {
       'GPS Address':
         biz.GPS === UNAPPROVED_COORDINATES ? '-' : (biz.address ?? '-'),
       'Market name': biz?.marketName ?? '-',
-      Section: biz.shopSectionNumber ?? '-',
+      SectionNumber: biz.shopSectionNumber ?? '-',
+      shopSection: biz.shopSectionNumber ?? '-',
       LGA: biz?.marketLGA ?? '-',
       Block: biz.shopBlock ?? '-',
       'Market Entity': biz?.marketEntity ?? '-',
