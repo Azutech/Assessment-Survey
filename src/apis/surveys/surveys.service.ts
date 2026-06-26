@@ -15,6 +15,7 @@ import { MarketRepository } from '../markets/repository/market.repository';
 import { AgentRepository } from '../agents/repository/agent.repository';
 import { APPLIANCES, shopTypeToSectionMap } from './constants/survey.constants';
 import { AdminRepository } from '../admin/repository/admin.repository';
+import { console } from 'node:inspector';
 // impro
 
 @Injectable()
@@ -175,6 +176,80 @@ export class SurveysService {
   ) {
     const cleanAgentDetails = agentDetails?.trim();
     const hasAgentFilter = cleanAgentDetails && cleanAgentDetails.length > 0;
+
+    const { data, total } = await this.surveyRepository.findAllCustomerIndex(
+      {},
+      LGA_Eligibility,
+      hasPictures,
+      marketEntity,
+      marketState,
+      marketLGA,
+      hasAgentFilter ? cleanAgentDetails : undefined,
+      currentEnergySource,
+      marketName?.trim(),
+      search?.trim(),
+      status,
+      gpsFilter,
+      dateRange,
+      page,
+      limit,
+    );
+
+    const count = await this.surveyRepository.countMessages();
+
+    if (data.length === 0) {
+      return {
+        message: 'No customers found',
+        data: [],
+        pagination: {
+          currentPage: page,
+          totalPages: 0,
+          totalItems: 0,
+          count,
+        },
+      };
+    }
+
+    return {
+      message: 'Customers retrieved successfully',
+      data,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+        totalItems: total,
+        total: count,
+        limit,
+        hasMore: page * limit < total,
+      },
+    };
+  }
+  async viewAllCustomersAgents(
+    agentId:string,
+    search?: string,
+    marketLGA?: string,
+    marketEntity?: string,
+    marketState?: string,
+    LGA_Eligibility?: boolean,
+    hasPictures?: boolean,
+    currentEnergySource?: string,
+    agentDetails?: string,
+    marketName?: string,
+    status?: string | string[], // 🔥 added
+    gpsFilter?: 'withGPS' | 'withoutGPS', // 🔥 NEW
+    dateRange?: string,
+    page = 1,
+    limit = 50,
+  
+  ) {
+    const cleanAgentDetails = agentDetails?.trim();
+    const hasAgentFilter = cleanAgentDetails && cleanAgentDetails.length > 0;
+
+
+    const agent = await this.agentRepository.findOne({_id : agentId})
+
+    if (!agent) {
+      throw new NotFoundException('Agent not found')
+    }
 
     const { data, total } = await this.surveyRepository.findAllCustomerIndex(
       {},

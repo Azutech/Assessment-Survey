@@ -87,7 +87,6 @@ export class SurveyRepository {
     status?: string | string[],
     gpsFilter?: 'withGPS' | 'withoutGPS',
     dateRange?: string,
-    // date?: string,
     page = 1,
     limit = 10,
   ): Promise<{ data: any[]; total: number }> {
@@ -650,12 +649,6 @@ export class SurveyRepository {
           $lte: toDate,
         };
       }
-
-      console.log('MATCH STAGE', JSON.stringify(matchStage, null, 2));
-
-      const count = await this.surveyModel.countDocuments(matchStage);
-
-      console.log('MATCHED DOCS', count);
 
       const [summary, energyBreakdown] = await Promise.all([
         this.surveyModel.aggregate([
