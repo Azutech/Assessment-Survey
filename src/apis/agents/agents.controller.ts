@@ -15,7 +15,7 @@ import {
 import { AgentsService } from './agents.service';
 import { CreateAgentDto, LoginDto } from './dto/agent.dto';
 import { ZodValidationPipe } from 'node_modules/nestjs-zod/dist/index.cjs';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { JwtAuthGuard } from 'src/guards/jwt/jwt.guard';
 
 @Controller('agents')
