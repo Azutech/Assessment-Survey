@@ -144,9 +144,7 @@ All endpoints require `Authorization: Bearer <token>` unless marked public.
 | GET | /analytics/dashboard | Summary cards — total shops, verified, pending, GPS, markets, agents |
 | GET | /analytics/summary | Aggregate metrics + energy source breakdown (?dateRange) |
 | GET | /analytics/markets | Per-market stats (?dateRange) |
-| GET | /analytics/agents | Per-agent stats (?dateRange) |
-| GET | /analytics/electricity-distribution | Electricity supply hours distribution |
-| GET | /analytics/wtp-distribution | Willingness to pay distribution |
+
 
 ## Export
 | Method | Endpoint | Description |
