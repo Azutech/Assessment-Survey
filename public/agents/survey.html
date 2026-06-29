@@ -51,6 +51,30 @@
       flex: 1;
     }
 
+.challenge-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  user-select: none;
+}
+
+.challenge-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.challenge-item:hover {
+  border-color: #1a1f36;
+}
+
     .step-dot .dot {
       width: 28px;
       height: 28px;
@@ -133,18 +157,20 @@
 
     label .required { color: #e74c3c; margin-left: 2px; }
 
-    input, select, textarea {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 14px;
-      color: #333;
-      background: #fff;
-      outline: none;
-      transition: border-color 0.2s;
-      -webkit-appearance: none;
-    }
+ input:not([type="checkbox"]),
+select,
+textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+}
 
     input:focus, select:focus, textarea:focus {
       border-color: #1a1f36;
@@ -457,23 +483,39 @@
 
     <div class="form-group">
       <label>Energy Challenges (select up to 7)</label>
-      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:4px">
-        <label style="text-transform:none;font-weight:400;display:flex;align-items:center;gap:6px;font-size:13px">
-          <input type="checkbox" value="high-cost" onchange="limitChallenges(this)" /> High Cost
-        </label>
-        <label style="text-transform:none;font-weight:400;display:flex;align-items:center;gap:6px;font-size:13px">
-          <input type="checkbox" value="fuel-scarcity" onchange="limitChallenges(this)" /> Fuel Scarcity
-        </label>
-        <label style="text-transform:none;font-weight:400;display:flex;align-items:center;gap:6px;font-size:13px">
-          <input type="checkbox" value="maintenance" onchange="limitChallenges(this)" /> Maintenance
-        </label>
-        <label style="text-transform:none;font-weight:400;display:flex;align-items:center;gap:6px;font-size:13px">
-          <input type="checkbox" value="pollution" onchange="limitChallenges(this)" /> Pollution
-        </label>
-        <label style="text-transform:none;font-weight:400;display:flex;align-items:center;gap:6px;font-size:13px">
-          <input type="checkbox" value="other" onchange="limitChallenges(this)" /> Other
-        </label>
-      </div>
+<div
+  style="
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
+    gap:10px;
+    margin-top:8px;
+  "
+>
+  <label class="challenge-item">
+    <input type="checkbox" value="high-cost" onchange="limitChallenges(this)">
+    <span>High Cost</span>
+  </label>
+
+  <label class="challenge-item">
+    <input type="checkbox" value="fuel-scarcity" onchange="limitChallenges(this)">
+    <span>Fuel Scarcity</span>
+  </label>
+
+  <label class="challenge-item">
+    <input type="checkbox" value="maintenance" onchange="limitChallenges(this)">
+    <span>Maintenance</span>
+  </label>
+
+  <label class="challenge-item">
+    <input type="checkbox" value="pollution" onchange="limitChallenges(this)">
+    <span>Pollution</span>
+  </label>
+
+  <label class="challenge-item">
+    <input type="checkbox" value="other" onchange="limitChallenges(this)">
+    <span>Other</span>
+  </label>
+</div>
     </div>
 
     <div class="form-group">
@@ -615,7 +657,6 @@
       <label>Signature <span class="required">*</span></label>
       <canvas
         id="signature-pad"
-        width="100%"
         height="150"
         style="border:1px solid #ddd;border-radius:8px;width:100%;touch-action:none;background:#fff"
       ></canvas>
@@ -639,10 +680,22 @@
 
 <script>
   // ── AUTH GUARD ───────────────────────────────────────────────
-  (function() {
-    if (!localStorage.getItem('token')) window.location.href = '/login.html';
-    document.getElementById('agent-name').textContent = localStorage.getItem('agentName') ?? '';
-  })();
+(function () {
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+
+  if (!token || role !== "agent") {
+    window.location.href = "/login.html";
+    return;
+  }
+
+  const user = JSON.parse(
+    localStorage.getItem("user") || "{}"
+  );
+
+  document.getElementById("agent-name").textContent =
+    user.fullName || "";
+})();
 
   // ── STATE ────────────────────────────────────────────────────
   let currentStep = 1;
@@ -791,36 +844,54 @@
     if (!query.trim()) { dropdown.style.display = 'none'; return; }
 
     marketTimeout = setTimeout(async () => {
-      const res = await apiFetch(`/markets?search=${encodeURIComponent(query)}`);
+      const res = await apiFetch(`/api/v1/markets/findAllMarkets?search=${encodeURIComponent(query)}`);
       if (!res) return;
-      const { data } = await res.json();
+      const response = await res.json();
 
-      if (!data.length) { dropdown.style.display = 'none'; return; }
+      const markets = response.markets?.data || [];
 
-      dropdown.style.display = 'block';
-      dropdown.innerHTML = data.map(m => `
-        <div
-          onclick="selectMarket('${m._id}', '${m.marketName}', '${m.LGA}', '${m.marketState}', '${m.marketEntity ?? ''}')"
-          style="padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid #f0f0f0"
-          onmouseover="this.style.background='#f8f9fc'"
-          onmouseout="this.style.background='#fff'"
-        >
-          <strong>${m.marketName}</strong>
-          <span style="color:#888;font-size:11px"> · ${m.LGA}, ${m.marketState}</span>
-        </div>
-      `).join('');
+      if (!markets.length) {
+      dropdown.style.display = 'none';
+      return;
+      }
+
+    dropdown.style.display = 'block';
+
+    dropdown.innerHTML = markets.map(m => `
+  <div
+    onclick="selectMarket(
+      '${m._id}',
+      '${m.marketName}',
+      '${m.marketLGA}',
+      '${m.marketState}',
+      '${m.marketEntity ?? ''}'
+    )"
+    style="padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid #f0f0f0"
+  >
+    <strong>${m.marketName}</strong>
+    <span style="color:#888;font-size:11px">
+      · ${m.marketLGA}, ${m.marketState}
+    </span>
+  </div>
+`).join('');
     }, 300);
   }
+function selectMarket(id, name, lga, state, entity) {
+  console.log('MARKET SELECTED');
 
-  function selectMarket(id, name, lga, state, entity) {
-    document.getElementById('marketName').value  = id;
-    document.getElementById('market-search').value = name;
-    document.getElementById('marketLGA').value   = lga;
-    document.getElementById('marketState').value = state;
-    document.getElementById('marketEntity').value = entity;
-    document.getElementById('market-dropdown').style.display = 'none';
-    document.getElementById('err-marketName').classList.remove('show');
-  }
+  document.getElementById('marketName').value = id;
+  document.getElementById('market-search').value = name;
+  document.getElementById('marketLGA').value = lga;
+  document.getElementById('marketState').value = state;
+  document.getElementById('marketEntity').value = entity;
+
+  console.log(
+    document.getElementById('marketName').value
+  );
+
+  document.getElementById('market-dropdown').style.display = 'none';
+  document.getElementById('err-marketName').classList.remove('show');
+}
 
   // close dropdown on outside click
   document.addEventListener('click', (e) => {
@@ -936,83 +1007,177 @@
     reader.readAsDataURL(file);
 
     // upload immediately
+const fd = new FormData();
+fd.append('files', file);
+
+try {
+  const res = await apiFetch(
+    '/api/v1/file-upload/upload-multiple',
+    {
+      method: 'POST',
+      body: fd
+    }
+  );
+
+  if (!res) return;
+
+  const result = await res.json();
+
+  formData.images[field] = result.files?.[0]?.url;
+
+  if (field === 'shopExteriorImage') {
+    document
+      .getElementById('err-shopExteriorImage')
+      .classList.remove('show');
+  }
+} catch (err) {
+  console.error(err);
+  alert('Image upload failed. Please try again.');
+}
+  }
+
+// ── SIGNATURE PAD ────────────────────────────────────────────
+let hasSignature = false;
+
+function initSignaturePad() {
+    console.log('Signature pad initialized');
+
+  const canvas = document.getElementById('signature-pad');
+  console.log(canvas);
+console.log(canvas.offsetWidth);
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = canvas.offsetWidth;
+  canvas.height = 150;
+
+  ctx.strokeStyle = '#1a1f36';
+  ctx.lineWidth = 2;
+  ctx.lineCap = 'round';
+
+  let drawing = false;
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const src = e.touches ? e.touches[0] : e;
+
+    return {
+      x: src.clientX - rect.left,
+      y: src.clientY - rect.top,
+    };
+  }
+
+  function start(e) {
+      console.log('START DRAWING');
+
+    e.preventDefault();
+
+    drawing = true;
+
+    const { x, y } = getPos(e);
+
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  }
+
+  function draw(e) {
+    e.preventDefault();
+
+    if (!drawing) return;
+
+    hasSignature = true;
+
+    const { x, y } = getPos(e);
+
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  }
+
+async function stop(e) {
+  if (!drawing) return;
+
+  console.log('STOP DRAWING');
+
+  e.preventDefault();
+  drawing = false;
+
+  if (!hasSignature) return;
+
+  try {
+    const dataUrl = canvas.toDataURL('image/png');
+
+    console.log('Canvas width:', canvas.width);
+    console.log('Canvas height:', canvas.height);
+    console.log('Data URL:', dataUrl.substring(0, 50));
+
+ const blob = await new Promise((resolve) => {
+  canvas.toBlob(resolve, 'image/png');
+});
+
+console.log(blob);
+
     const fd = new FormData();
-    fd.append('file', file);
+    fd.append('files', blob, 'signature.png');
 
-    try {
-      const res = await apiFetch('/uploads', { method: 'POST', body: fd });
-      if (!res) return;
-      const { data } = await res.json();
-      formData.images[field] = data.url;
-
-      if (field === 'shopExteriorImage') {
-        document.getElementById('err-shopExteriorImage').classList.remove('show');
+    const res = await apiFetch(
+      '/api/v1/file-upload/uploadFileSignature',
+      {
+        method: 'POST',
+        body: fd,
       }
-    } catch {
-      alert('Image upload failed. Please try again.');
+    );
+
+    if (!res) return;
+
+    const result = await res.json();
+
+    console.log('Signature Upload:', result);
+
+    formData.signature =
+      result.files?.[0]?.url ||
+      result.files?.[0]?.location ||
+      null;
+
+    console.log('Signature URL:', formData.signature);
+
+    if (formData.signature) {
+      document
+        .getElementById('err-signature')
+        .classList.remove('show');
     }
+  } catch (err) {
+    console.error('Signature upload error:', err);
+    alert('Signature upload failed');
   }
+}
 
-  // ── SIGNATURE PAD ────────────────────────────────────────────
-  function initSignaturePad() {
-    const canvas = document.getElementById('signature-pad');
-    const ctx = canvas.getContext('2d');
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', draw);
 
-    // set actual pixel size
-    canvas.width  = canvas.offsetWidth;
-    canvas.height = 150;
+  canvas.addEventListener('touchstart', start, {
+    passive: false,
+  });
 
-    ctx.strokeStyle = '#1a1f36';
-    ctx.lineWidth   = 2;
-    ctx.lineCap     = 'round';
+  canvas.addEventListener('touchmove', draw, {
+    passive: false,
+  });
 
-    let drawing = false;
+  // Important
+  window.addEventListener('mouseup', stop);
+  window.addEventListener('touchend', stop, {
+    passive: false,
+  });
+}
 
-    function getPos(e) {
-      const rect = canvas.getBoundingClientRect();
-      const src  = e.touches ? e.touches[0] : e;
-      return {
-        x: src.clientX - rect.left,
-        y: src.clientY - rect.top,
-      };
-    }
+function clearSignature() {
+  const canvas = document.getElementById('signature-pad');
 
-    function start(e) {
-      e.preventDefault();
-      drawing = true;
-      const { x, y } = getPos(e);
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-    }
+  canvas
+    .getContext('2d')
+    .clearRect(0, 0, canvas.width, canvas.height);
 
-    function draw(e) {
-      e.preventDefault();
-      if (!drawing) return;
-      const { x, y } = getPos(e);
-      ctx.lineTo(x, y);
-      ctx.stroke();
-    }
-
-    function stop(e) {
-      e.preventDefault();
-      drawing = false;
-      formData.signature = canvas.toDataURL('image/png');
-      document.getElementById('err-signature').classList.remove('show');
-    }
-
-    canvas.addEventListener('mousedown', start);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseup', stop);
-    canvas.addEventListener('touchstart', start, { passive: false });
-    canvas.addEventListener('touchmove', draw, { passive: false });
-    canvas.addEventListener('touchend', stop, { passive: false });
-  }
-
-  function clearSignature() {
-    const canvas = document.getElementById('signature-pad');
-    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-    formData.signature = null;
-  }
+  hasSignature = false;
+  formData.signature = null;
+}
 
   // ── CONSENT ──────────────────────────────────────────────────
   function toggleSubmitBtn() {
@@ -1080,7 +1245,9 @@
     };
 
     try {
-      const res = await apiFetch('/surveys', {
+        console.log('PAYLOAD', payload);
+
+      const res = await apiFetch('/api/v1/surveys/addSurvey', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

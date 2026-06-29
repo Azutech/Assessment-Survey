@@ -15,7 +15,6 @@ import { MarketRepository } from '../markets/repository/market.repository';
 import { AgentRepository } from '../agents/repository/agent.repository';
 import { APPLIANCES, shopTypeToSectionMap } from './constants/survey.constants';
 import { AdminRepository } from '../admin/repository/admin.repository';
-import { console } from 'node:inspector';
 // impro
 
 @Injectable()

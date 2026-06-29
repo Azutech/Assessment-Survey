@@ -246,12 +246,15 @@
   </div>
 
   <div class="actions">
-    <button
-      class="btn btn-primary"
-      onclick="window.location.href='/survey.html'"
-    >
-      + Add Survey
-    </button>
+ <button
+    class="btn btn-primary"
+    onclick="window.location.href='/agents/survey.html'"
+>
+
+    + Add Survey
+
+</button>
+
 
 
 <button
@@ -307,23 +310,22 @@
 
 <script>
 
-const auth = JSON.parse(
-  localStorage.getItem("auth") || "{}"
-);
+const token = localStorage.getItem("token");
+const role = localStorage.getItem("role");
 
-if (!auth.token) {
-  window.location.href = "/";
+if (!token || role !== "agent") {
+  window.location.href = "/login.html";
 }
 
 async function loadAgent() {
   try {
-    console.log("TOKEN", auth.token);
+    console.log("TOKEN", token);
 
     const response = await fetch(
       "/api/v1/agents/agentDashboard",
       {
         headers: {
-          Authorization: `Bearer ${auth.token}`
+          Authorization: `Bearer ${token}`
         }
       }
     );
@@ -366,7 +368,7 @@ async function loadSurveys(search = "") {
       `/api/v1/surveys/viewAllCustomersAgents?page=1&limit=20&search=${encodeURIComponent(search)}`,
       {
         headers: {
-          Authorization: `Bearer ${auth.token}`
+          Authorization: `Bearer ${token}`
         }
       }
     );
@@ -439,10 +441,11 @@ async function loadSurveys(search = "") {
 }
 
 function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("role");
+  localStorage.removeItem("user");
 
-  localStorage.removeItem("auth");
-
-  window.location.href = "/";
+  window.location.href = "/login.html";
 }
 
 document
